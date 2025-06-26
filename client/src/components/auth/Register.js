@@ -27,7 +27,7 @@ const Register = () => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register, error, clearError, isAuthenticated } = useAuth();
+    const { register, error, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,10 +35,6 @@ const Register = () => {
             navigate('/');
         }
     }, [isAuthenticated, navigate]);
-
-    useEffect(() => {
-        clearError();
-    }, [clearError]);
 
     const handleChange = (e) => {
         setFormData({
@@ -149,9 +145,9 @@ const Register = () => {
                         </Alert>
                     )}
 
-                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Box component="form" onSubmit={handleSubmit} noValidate role="form">
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid xs={12} md={6}>
                                 <TextField
                                     margin="normal"
                                     required
@@ -168,7 +164,7 @@ const Register = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid xs={12} md={6}>
                                 <TextField
                                     margin="normal"
                                     required
@@ -208,6 +204,7 @@ const Register = () => {
                             id="email"
                             label="Email Address"
                             name="email"
+                            type="email"
                             autoComplete="email"
                             value={formData.email}
                             onChange={handleChange}

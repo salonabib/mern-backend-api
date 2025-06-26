@@ -22,7 +22,7 @@ const Login = () => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { login, error, clearError, isAuthenticated } = useAuth();
+    const { login, error, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,10 +30,6 @@ const Login = () => {
             navigate('/');
         }
     }, [isAuthenticated, navigate]);
-
-    useEffect(() => {
-        clearError();
-    }, [clearError]);
 
     const handleChange = (e) => {
         setFormData({
@@ -109,7 +105,7 @@ const Login = () => {
                         </Alert>
                     )}
 
-                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Box component="form" onSubmit={handleSubmit} noValidate role="form">
                         <TextField
                             margin="normal"
                             required
@@ -117,6 +113,7 @@ const Login = () => {
                             id="email"
                             label="Email Address"
                             name="email"
+                            type="email"
                             autoComplete="email"
                             autoFocus
                             value={formData.email}

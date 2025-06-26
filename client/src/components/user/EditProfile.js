@@ -159,7 +159,7 @@ const EditProfile = () => {
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
                         <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid xs={12} sm={6}>
                                 <TextField
                                     fullWidth
                                     required
@@ -173,7 +173,7 @@ const EditProfile = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid xs={12} sm={6}>
                                 <TextField
                                     fullWidth
                                     required
@@ -187,7 +187,7 @@ const EditProfile = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid xs={12}>
                                 <TextField
                                     fullWidth
                                     id="avatar"
@@ -200,7 +200,7 @@ const EditProfile = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid xs={12}>
                                 <TextField
                                     fullWidth
                                     id="bio"

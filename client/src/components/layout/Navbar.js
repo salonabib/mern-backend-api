@@ -58,7 +58,7 @@ const Navbar = () => {
 
     return (
         <AppBar position="static">
-            <Toolbar>
+            <Toolbar role="toolbar">
                 <Typography
                     variant="h6"
                     component={RouterLink}
@@ -102,6 +102,7 @@ const Navbar = () => {
                             aria-haspopup="true"
                             onClick={handleMenu}
                             color="inherit"
+                            tabIndex={0}
                         >
                             {user?.avatar ? (
                                 <Avatar
@@ -128,22 +129,22 @@ const Navbar = () => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <MenuItem onClick={handleProfile}>
+                            <MenuItem onClick={handleProfile} aria-label="Profile" tabIndex={0}>
                                 <AccountCircle sx={{ mr: 1 }} />
                                 Profile
                             </MenuItem>
-                            <MenuItem onClick={handleEditProfile}>
+                            <MenuItem onClick={handleEditProfile} aria-label="Edit Profile" tabIndex={0}>
                                 <Settings sx={{ mr: 1 }} />
                                 Edit Profile
                             </MenuItem>
                             {user?.role === 'admin' && (
-                                <MenuItem onClick={handleUsers}>
+                                <MenuItem onClick={handleUsers} aria-label="Manage Users" tabIndex={0}>
                                     <People sx={{ mr: 1 }} />
                                     Manage Users
                                 </MenuItem>
                             )}
                             <Divider />
-                            <MenuItem onClick={handleLogout}>
+                            <MenuItem onClick={handleLogout} aria-label="Logout" tabIndex={0}>
                                 <Logout sx={{ mr: 1 }} />
                                 Logout
                             </MenuItem>

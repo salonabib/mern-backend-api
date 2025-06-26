@@ -21,9 +21,14 @@ import {
     Badge,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const Profile = () => {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return <LoadingSpinner message="Loading profile..." />;
+    }
 
     if (!user) {
         return null;
@@ -81,7 +86,7 @@ const Profile = () => {
 
                     {/* Profile Information */}
                     <Grid container spacing={4}>
-                        <Grid item xs={12} md={6}>
+                        <Grid xs={12} md={6}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h6" component="h2" gutterBottom>
@@ -135,7 +140,7 @@ const Profile = () => {
                             </Card>
                         </Grid>
 
-                        <Grid item xs={12} md={6}>
+                        <Grid xs={12} md={6}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h6" component="h2" gutterBottom>

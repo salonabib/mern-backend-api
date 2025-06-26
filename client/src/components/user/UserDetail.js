@@ -155,7 +155,7 @@ const UserDetail = () => {
 
                     {/* User Information */}
                     <Grid container spacing={4}>
-                        <Grid item xs={12} md={6}>
+                        <Grid xs={12} md={6}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h6" component="h3" gutterBottom>
@@ -209,7 +209,7 @@ const UserDetail = () => {
                             </Card>
                         </Grid>
 
-                        <Grid item xs={12} md={6}>
+                        <Grid xs={12} md={6}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h6" component="h3" gutterBottom>

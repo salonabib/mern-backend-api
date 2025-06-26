@@ -1,7 +1,10 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const LoadingSpinner = ({ message = 'Loading...' }) => {
+const LoadingSpinner = ({ message = 'Loading...', ...props }) => {
+    // Handle null/undefined message by using default
+    const displayMessage = message || 'Loading...';
+
     return (
         <Box
             sx={{
@@ -12,9 +15,13 @@ const LoadingSpinner = ({ message = 'Loading...' }) => {
                 minHeight: '50vh',
                 gap: 2,
             }}
+            {...props}
         >
-            <CircularProgress />
-            <Typography color="text.secondary">{message}</Typography>
+            <CircularProgress
+                aria-busy="true"
+                aria-label="Loading"
+            />
+            <Typography color="text.secondary">{displayMessage}</Typography>
         </Box>
     );
 };

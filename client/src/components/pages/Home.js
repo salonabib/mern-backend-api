@@ -44,7 +44,7 @@ const Home = () => {
 
     if (isAuthenticated) {
         return (
-            <Container maxWidth="lg">
+            <Container maxWidth="lg" component="main" role="main">
                 <Box sx={{ mt: 4, mb: 6 }}>
                     <Typography variant="h3" component="h1" gutterBottom align="center">
                         Welcome back, {user?.firstName}!
@@ -55,7 +55,7 @@ const Home = () => {
                 </Box>
 
                 <Grid container spacing={4}>
-                    <Grid item xs={12} md={6}>
+                    <Grid xs={12} md={6}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h5" component="h2" gutterBottom>
@@ -86,6 +86,7 @@ const Home = () => {
                                     component={RouterLink}
                                     to="/profile"
                                     fullWidth
+                                    role="button"
                                 >
                                     View Profile
                                 </Button>
@@ -93,7 +94,7 @@ const Home = () => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid xs={12} md={6}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h5" component="h2" gutterBottom>
@@ -105,6 +106,7 @@ const Home = () => {
                                         component={RouterLink}
                                         to="/profile/edit"
                                         fullWidth
+                                        role="button"
                                     >
                                         Edit Profile
                                     </Button>
@@ -114,6 +116,7 @@ const Home = () => {
                                             component={RouterLink}
                                             to="/users"
                                             fullWidth
+                                            role="button"
                                         >
                                             Manage Users
                                         </Button>
@@ -130,7 +133,7 @@ const Home = () => {
                     </Typography>
                     <Grid container spacing={4} sx={{ mt: 2 }}>
                         {features.map((feature, index) => (
-                            <Grid item xs={12} md={4} key={index}>
+                            <Grid xs={12} md={4} key={index}>
                                 <Card sx={{ height: '100%', textAlign: 'center' }}>
                                     <CardContent>
                                         <Box sx={{ color: 'primary.main', mb: 2 }}>
@@ -153,7 +156,7 @@ const Home = () => {
     }
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" component="main" role="main">
             <Box sx={{ mt: 8, mb: 6, textAlign: 'center' }}>
                 <HomeIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
                 <Typography variant="h2" component="h1" gutterBottom>
@@ -170,6 +173,7 @@ const Home = () => {
                         to="/register"
                         startIcon={<PersonAdd />}
                         sx={{ mr: 2 }}
+                        role="button"
                     >
                         Get Started
                     </Button>
@@ -179,6 +183,7 @@ const Home = () => {
                         component={RouterLink}
                         to="/login"
                         startIcon={<Login />}
+                        role="button"
                     >
                         Sign In
                     </Button>
@@ -191,7 +196,7 @@ const Home = () => {
                 </Typography>
                 <Grid container spacing={4} sx={{ mt: 2 }}>
                     {features.map((feature, index) => (
-                        <Grid item xs={12} md={4} key={index}>
+                        <Grid xs={12} md={4} key={index}>
                             <Box sx={{ textAlign: 'center' }}>
                                 <Box sx={{ color: 'primary.main', mb: 2 }}>
                                     {feature.icon}
@@ -221,6 +226,7 @@ const Home = () => {
                     component={RouterLink}
                     to="/register"
                     startIcon={<PersonAdd />}
+                    role="button"
                 >
                     Create Account
                 </Button>

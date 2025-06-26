@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // Register user
-    const register = async (userData) => {
+    const register = useCallback(async (userData) => {
         try {
             dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
             const res = await api.post('/auth/register', userData);
@@ -176,10 +176,10 @@ export const AuthProvider = ({ children }) => {
             });
             return { success: false, error: message };
         }
-    };
+    }, []);
 
     // Login user
-    const login = async (email, password) => {
+    const login = useCallback(async (email, password) => {
         try {
             dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
             const res = await api.post('/auth/login', { email, password });
@@ -196,15 +196,15 @@ export const AuthProvider = ({ children }) => {
             });
             return { success: false, error: message };
         }
-    };
+    }, []);
 
     // Logout user
-    const logout = () => {
+    const logout = useCallback(() => {
         dispatch({ type: AUTH_ACTIONS.LOGOUT });
-    };
+    }, []);
 
     // Update user profile
-    const updateProfile = async (profileData) => {
+    const updateProfile = useCallback(async (profileData) => {
         try {
             const res = await api.put('/auth/profile', profileData);
             dispatch({
@@ -216,12 +216,12 @@ export const AuthProvider = ({ children }) => {
             const message = error.response?.data?.message || 'Profile update failed';
             return { success: false, error: message };
         }
-    };
+    }, []);
 
     // Clear error
-    const clearError = () => {
+    const clearError = useCallback(() => {
         dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-    };
+    }, []);
 
     return (
         <AuthContext.Provider
@@ -251,4 +251,6 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-}; 
+};
+
+export { AuthContext }; 

@@ -41,3 +41,6 @@ afterAll(() => {
     console.error = originalError;
     console.warn = originalWarn;
 });
+
+global.TextEncoder = require('util').TextEncoder;
+global.TextDecoder = require('util').TextDecoder;

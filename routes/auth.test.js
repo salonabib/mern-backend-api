@@ -29,26 +29,25 @@ describe('Auth Routes', () => {
         await User.deleteMany({});
 
         // Create test user
-        const hashedPassword = await bcrypt.hash('password123', 10);
         testUser = await User.create({
             firstName: 'John',
             lastName: 'Doe',
             username: 'johndoe',
             email: 'john@example.com',
-            password: hashedPassword,
+            password: 'password123', // Use plain password, let model hash it
             role: 'user',
             isActive: true,
         });
 
         // Create test token
         testToken = jwt.sign(
-            { userId: testUser._id, role: testUser.role },
+            { id: testUser._id, role: testUser.role },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRE }
         );
     });
 
-    describe('POST /auth/register', () => {
+    describe('POST /api/auth/register', () => {
         it('should register a new user successfully', async () => {
             const newUser = {
                 firstName: 'Jane',
@@ -59,7 +58,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(newUser)
                 .expect(201);
 
@@ -82,7 +81,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(duplicateUser)
                 .expect(400);
 
@@ -100,7 +99,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(duplicateUser)
                 .expect(400);
 
@@ -118,7 +117,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(invalidUser)
                 .expect(400);
 
@@ -136,7 +135,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(invalidUser)
                 .expect(400);
 
@@ -146,13 +145,14 @@ describe('Auth Routes', () => {
 
         it('should return error for missing required fields', async () => {
             const incompleteUser = {
+                username: 'janeuser',
                 firstName: 'Jane',
                 email: 'jane@example.com',
                 password: 'password123',
             };
 
             const response = await request(app)
-                .post('/auth/register')
+                .post('/api/auth/register')
                 .send(incompleteUser)
                 .expect(400);
 
@@ -161,7 +161,7 @@ describe('Auth Routes', () => {
         });
     });
 
-    describe('POST /auth/login', () => {
+    describe('POST /api/auth/login', () => {
         it('should login user successfully with valid credentials', async () => {
             const loginData = {
                 email: 'john@example.com',
@@ -169,7 +169,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(200);
 
@@ -188,7 +188,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(401);
 
@@ -203,7 +203,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(401);
 
@@ -221,7 +221,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(401);
 
@@ -235,7 +235,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(400);
 
@@ -249,7 +249,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .post('/auth/login')
+                .post('/api/auth/login')
                 .send(loginData)
                 .expect(400);
 
@@ -258,10 +258,10 @@ describe('Auth Routes', () => {
         });
     });
 
-    describe('GET /auth/me', () => {
+    describe('GET /api/auth/me', () => {
         it('should return user profile with valid token', async () => {
             const response = await request(app)
-                .get('/auth/me')
+                .get('/api/auth/me')
                 .set('Authorization', `Bearer ${testToken}`)
                 .expect(200);
 
@@ -273,7 +273,7 @@ describe('Auth Routes', () => {
 
         it('should return error for missing token', async () => {
             const response = await request(app)
-                .get('/auth/me')
+                .get('/api/auth/me')
                 .expect(401);
 
             expect(response.body.success).toBe(false);
@@ -282,7 +282,7 @@ describe('Auth Routes', () => {
 
         it('should return error for invalid token', async () => {
             const response = await request(app)
-                .get('/auth/me')
+                .get('/api/auth/me')
                 .set('Authorization', 'Bearer invalid-token')
                 .expect(401);
 
@@ -293,13 +293,13 @@ describe('Auth Routes', () => {
         it('should return error for expired token', async () => {
             // Create expired token
             const expiredToken = jwt.sign(
-                { userId: testUser._id, role: testUser.role },
+                { id: testUser._id, role: testUser.role },
                 process.env.JWT_SECRET,
                 { expiresIn: '0s' }
             );
 
             const response = await request(app)
-                .get('/auth/me')
+                .get('/api/auth/me')
                 .set('Authorization', `Bearer ${expiredToken}`)
                 .expect(401);
 
@@ -311,13 +311,13 @@ describe('Auth Routes', () => {
             // Create token for non-existent user
             const nonExistentUserId = new mongoose.Types.ObjectId();
             const invalidToken = jwt.sign(
-                { userId: nonExistentUserId, role: 'user' },
+                { id: nonExistentUserId, role: 'user' },
                 process.env.JWT_SECRET,
                 { expiresIn: process.env.JWT_EXPIRE }
             );
 
             const response = await request(app)
-                .get('/auth/me')
+                .get('/api/auth/me')
                 .set('Authorization', `Bearer ${invalidToken}`)
                 .expect(404);
 
@@ -326,7 +326,7 @@ describe('Auth Routes', () => {
         });
     });
 
-    describe('PUT /auth/profile', () => {
+    describe('PUT /api/auth/profile', () => {
         it('should update user profile successfully', async () => {
             const updateData = {
                 firstName: 'Johnny',
@@ -335,7 +335,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/profile')
+                .put('/api/auth/profile')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(updateData)
                 .expect(200);
@@ -353,7 +353,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/profile')
+                .put('/api/auth/profile')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(updateData)
                 .expect(400);
@@ -378,7 +378,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/profile')
+                .put('/api/auth/profile')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(updateData)
                 .expect(400);
@@ -393,7 +393,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/profile')
+                .put('/api/auth/profile')
                 .send(updateData)
                 .expect(401);
 
@@ -402,7 +402,7 @@ describe('Auth Routes', () => {
         });
     });
 
-    describe('PUT /auth/password', () => {
+    describe('PUT /api/auth/password', () => {
         it('should change password successfully', async () => {
             const passwordData = {
                 currentPassword: 'password123',
@@ -410,7 +410,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/password')
+                .put('/api/auth/password')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(passwordData)
                 .expect(200);
@@ -426,7 +426,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/password')
+                .put('/api/auth/password')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(passwordData)
                 .expect(400);
@@ -442,7 +442,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/password')
+                .put('/api/auth/password')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(passwordData)
                 .expect(400);
@@ -457,7 +457,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/password')
+                .put('/api/auth/password')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(passwordData)
                 .expect(400);
@@ -472,7 +472,7 @@ describe('Auth Routes', () => {
             };
 
             const response = await request(app)
-                .put('/auth/password')
+                .put('/api/auth/password')
                 .set('Authorization', `Bearer ${testToken}`)
                 .send(passwordData)
                 .expect(400);

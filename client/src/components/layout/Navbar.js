@@ -19,6 +19,7 @@ import {
     PersonAdd,
     Logout,
     Settings,
+    Feed,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -70,7 +71,7 @@ const Navbar = () => {
                         fontWeight: 'bold',
                     }}
                 >
-                    MERN App
+                    MERN Social
                 </Typography>
 
                 {isAuthenticated ? (
@@ -82,6 +83,15 @@ const Navbar = () => {
                             startIcon={<Home />}
                         >
                             Home
+                        </Button>
+
+                        <Button
+                            color="inherit"
+                            component={RouterLink}
+                            to="/newsfeed"
+                            startIcon={<Feed />}
+                        >
+                            Newsfeed
                         </Button>
 
                         {user?.role === 'admin' && (
@@ -104,9 +114,9 @@ const Navbar = () => {
                             color="inherit"
                             tabIndex={0}
                         >
-                            {user?.avatar ? (
+                            {user?.photo ? (
                                 <Avatar
-                                    src={user.avatar}
+                                    src={`/api/users/${user._id}/photo`}
                                     alt={user.firstName}
                                     sx={{ width: 32, height: 32 }}
                                 />

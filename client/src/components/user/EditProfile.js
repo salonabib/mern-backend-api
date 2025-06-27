@@ -10,8 +10,10 @@ import {
     Alert,
     CircularProgress,
     Grid,
+    Avatar,
+    IconButton,
 } from '@mui/material';
-import { Save, ArrowBack } from '@mui/icons-material';
+import { Save, ArrowBack, PhotoCamera, Delete } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 
 const EditProfile = () => {
@@ -21,9 +23,11 @@ const EditProfile = () => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
+        about: '',
         bio: '',
-        avatar: '',
     });
+    const [photoFile, setPhotoFile] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState('');
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -33,9 +37,13 @@ const EditProfile = () => {
             setFormData({
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
+                about: user.about || '',
                 bio: user.bio || '',
-                avatar: user.avatar || '',
             });
+            // Set photo preview if user has a photo
+            if (user.photo) {
+                setPhotoPreview(`/api/users/${user._id}/photo`);
+            }
         }
     }, [user]);
 
@@ -57,6 +65,33 @@ const EditProfile = () => {
         }
     };
 
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                setErrors({ photo: 'Please select an image file' });
+                return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                setErrors({ photo: 'Image size must be less than 5MB' });
+                return;
+            }
+
+            setPhotoFile(file);
+            setPhotoPreview(URL.createObjectURL(file));
+            setErrors({ ...errors, photo: '' });
+        }
+    };
+
+    const handleRemovePhoto = () => {
+        setPhotoFile(null);
+        setPhotoPreview('');
+        setErrors({ ...errors, photo: '' });
+    };
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -72,25 +107,16 @@ const EditProfile = () => {
             newErrors.lastName = 'Last name cannot exceed 50 characters';
         }
 
+        if (formData.about && formData.about.length > 500) {
+            newErrors.about = 'About cannot exceed 500 characters';
+        }
+
         if (formData.bio && formData.bio.length > 500) {
             newErrors.bio = 'Bio cannot exceed 500 characters';
         }
 
-        if (formData.avatar && !isValidUrl(formData.avatar)) {
-            newErrors.avatar = 'Please enter a valid URL';
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
-
-    const isValidUrl = (string) => {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
     };
 
     const handleSubmit = async (e) => {
@@ -103,7 +129,12 @@ const EditProfile = () => {
         setIsSubmitting(true);
 
         try {
-            const result = await updateProfile(formData);
+            const updateData = { ...formData };
+            if (photoFile) {
+                updateData.photo = photoFile;
+            }
+
+            const result = await updateProfile(updateData);
             if (result.success) {
                 setSuccessMessage('Profile updated successfully!');
                 setTimeout(() => {
@@ -158,6 +189,61 @@ const EditProfile = () => {
                     )}
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
+                        {/* Photo Upload Section */}
+                        <Box sx={{ mb: 4, textAlign: 'center' }}>
+                            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                                <Avatar
+                                    src={photoPreview}
+                                    alt={user.firstName}
+                                    sx={{
+                                        width: 120,
+                                        height: 120,
+                                        mb: 2,
+                                        border: '3px solid #e0e0e0'
+                                    }}
+                                >
+                                    {user.firstName?.charAt(0)}
+                                </Avatar>
+                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                    <input
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        id="photo-upload"
+                                        type="file"
+                                        onChange={handlePhotoChange}
+                                    />
+                                    <label htmlFor="photo-upload">
+                                        <IconButton
+                                            color="primary"
+                                            aria-label="upload picture"
+                                            component="span"
+                                            disabled={isSubmitting}
+                                        >
+                                            <PhotoCamera />
+                                        </IconButton>
+                                    </label>
+                                    {photoPreview && (
+                                        <IconButton
+                                            color="error"
+                                            aria-label="remove picture"
+                                            onClick={handleRemovePhoto}
+                                            disabled={isSubmitting}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    )}
+                                </Box>
+                            </Box>
+                            {errors.photo && (
+                                <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                                    {errors.photo}
+                                </Typography>
+                            )}
+                            <Typography variant="body2" color="text.secondary">
+                                Upload a profile photo (max 5MB)
+                            </Typography>
+                        </Box>
+
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
@@ -195,15 +281,15 @@ const EditProfile = () => {
                             <TextField
                                 margin="normal"
                                 fullWidth
-                                id="bio"
-                                label="Bio"
-                                name="bio"
+                                id="about"
+                                label="About"
+                                name="about"
                                 multiline
-                                rows={4}
-                                value={formData.bio}
+                                rows={3}
+                                value={formData.about}
                                 onChange={handleChange}
-                                error={!!errors.bio}
-                                helperText={errors.bio}
+                                error={!!errors.about}
+                                helperText={errors.about || "Tell us about yourself (max 500 characters)"}
                                 disabled={isSubmitting}
                             />
                         </Grid>
@@ -212,13 +298,15 @@ const EditProfile = () => {
                             <TextField
                                 margin="normal"
                                 fullWidth
-                                id="avatar"
-                                label="Avatar URL"
-                                name="avatar"
-                                value={formData.avatar}
+                                id="bio"
+                                label="Bio"
+                                name="bio"
+                                multiline
+                                rows={4}
+                                value={formData.bio}
                                 onChange={handleChange}
-                                error={!!errors.avatar}
-                                helperText={errors.avatar}
+                                error={!!errors.bio}
+                                helperText={errors.bio || "A longer bio about yourself (max 500 characters)"}
                                 disabled={isSubmitting}
                             />
                         </Grid>

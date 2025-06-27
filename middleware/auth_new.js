@@ -21,7 +21,7 @@ const protect = async (req, res, next) => {
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'Access denied. No token provided.'
+            message: 'Not authorized to access this route'
         });
     }
 
@@ -33,7 +33,7 @@ const protect = async (req, res, next) => {
         req.user = await User.findById(decoded.id).select('-password');
 
         if (!req.user) {
-            return res.status(404).json({
+            return res.status(401).json({
                 success: false,
                 message: 'User not found'
             });
@@ -42,23 +42,16 @@ const protect = async (req, res, next) => {
         if (!req.user.isActive) {
             return res.status(401).json({
                 success: false,
-                message: 'Account is deactivated'
+                message: 'User account is deactivated'
             });
         }
 
         next();
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({
-                success: false,
-                message: 'Token expired'
-            });
-        } else {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid token'
-            });
-        }
+        return res.status(401).json({
+            success: false,
+            message: 'Not authorized to access this route'
+        });
     }
 };
 
@@ -101,4 +94,4 @@ module.exports = {
     authorize,
     optionalAuth,
     generateToken
-};
+}; 

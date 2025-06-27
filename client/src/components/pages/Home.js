@@ -8,7 +8,6 @@ import {
     CardContent,
     Grid,
     Button,
-    Paper,
     Avatar,
 } from '@mui/material';
 import {
@@ -18,8 +17,11 @@ import {
     Code,
     Login,
     PersonAdd,
+    Feed,
+    People,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import UserSuggestions from '../user/UserSuggestions';
 
 const Home = () => {
     const { isAuthenticated, user } = useAuth();
@@ -43,6 +45,9 @@ const Home = () => {
     ];
 
     if (isAuthenticated) {
+        // Get photo URL if user has a photo
+        const photoUrl = user?.photo ? `/api/users/${user._id}/photo` : null;
+
         return (
             <Container maxWidth="lg" component="main" role="main">
                 <Box sx={{ mt: 4, mb: 6 }}>
@@ -50,130 +55,145 @@ const Home = () => {
                         Welcome back, {user?.firstName}!
                     </Typography>
                     <Typography variant="h6" color="text.secondary" align="center" paragraph>
-                        You're successfully logged into your MERN stack application.
+                        You're successfully logged into your MERN Social application.
                     </Typography>
                 </Box>
 
                 <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Card sx={{ height: '100%' }}>
-                            <CardContent>
-                                <Typography variant="h5" component="h2" gutterBottom>
-                                    Your Profile
-                                </Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <Avatar
-                                        src={user?.avatar}
-                                        alt={user?.firstName}
-                                        sx={{ width: 64, height: 64, mr: 2 }}
-                                    >
-                                        {user?.firstName?.charAt(0)}
-                                    </Avatar>
-                                    <Box>
-                                        <Typography variant="h6">
-                                            {user?.firstName} {user?.lastName}
+                    <Grid size={{ xs: 12, md: 8 }}>
+                        <Grid container spacing={4}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Card sx={{ height: '100%' }}>
+                                    <CardContent>
+                                        <Typography variant="h5" component="h2" gutterBottom>
+                                            Your Profile
                                         </Typography>
-                                        <Typography color="text.secondary">
-                                            @{user?.username}
-                                        </Typography>
-                                        <Typography color="text.secondary">
-                                            {user?.email}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                                <Button
-                                    variant="contained"
-                                    component={RouterLink}
-                                    to="/profile"
-                                    fullWidth
-                                    role="button"
-                                >
-                                    View Profile
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Card sx={{ height: '100%' }}>
-                            <CardContent>
-                                <Typography variant="h5" component="h2" gutterBottom>
-                                    Quick Actions
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                    <Button
-                                        variant="outlined"
-                                        component={RouterLink}
-                                        to="/profile/edit"
-                                        fullWidth
-                                        role="button"
-                                    >
-                                        Edit Profile
-                                    </Button>
-                                    {user?.role === 'admin' && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <Avatar
+                                                src={photoUrl}
+                                                alt={user?.firstName}
+                                                sx={{ width: 64, height: 64, mr: 2 }}
+                                            >
+                                                {user?.firstName?.charAt(0)}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="h6">
+                                                    {user?.firstName} {user?.lastName}
+                                                </Typography>
+                                                <Typography color="text.secondary">
+                                                    @{user?.username}
+                                                </Typography>
+                                                <Typography color="text.secondary">
+                                                    {user?.email}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
                                         <Button
                                             variant="outlined"
                                             component={RouterLink}
-                                            to="/users"
+                                            to="/profile"
                                             fullWidth
-                                            role="button"
                                         >
-                                            Manage Users
+                                            View Profile
                                         </Button>
-                                    )}
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
-
-                <Box sx={{ mt: 6 }}>
-                    <Typography variant="h4" component="h2" gutterBottom align="center">
-                        Application Features
-                    </Typography>
-                    <Grid container spacing={4} sx={{ mt: 2 }}>
-                        {features.map((feature, index) => (
-                            <Grid size={{ xs: 12, md: 4 }} key={index}>
-                                <Card sx={{ height: '100%', textAlign: 'center' }}>
-                                    <CardContent>
-                                        <Box sx={{ color: 'primary.main', mb: 2 }}>
-                                            {feature.icon}
-                                        </Box>
-                                        <Typography variant="h6" component="h3" gutterBottom>
-                                            {feature.title}
-                                        </Typography>
-                                        <Typography color="text.secondary">
-                                            {feature.description}
-                                        </Typography>
                                     </CardContent>
                                 </Card>
                             </Grid>
-                        ))}
+
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Card sx={{ height: '100%' }}>
+                                    <CardContent>
+                                        <Typography variant="h5" component="h2" gutterBottom>
+                                            Social Features
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                            <Button
+                                                variant="contained"
+                                                component={RouterLink}
+                                                to="/newsfeed"
+                                                startIcon={<Feed />}
+                                                fullWidth
+                                            >
+                                                Go to Newsfeed
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                component={RouterLink}
+                                                to="/profile/edit"
+                                                fullWidth
+                                            >
+                                                Edit Profile
+                                            </Button>
+                                            {user?.role === 'admin' && (
+                                                <Button
+                                                    variant="contained"
+                                                    component={RouterLink}
+                                                    to="/users"
+                                                    startIcon={<People />}
+                                                    fullWidth
+                                                >
+                                                    Manage Users
+                                                </Button>
+                                            )}
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ mt: 6 }}>
+                            <Typography variant="h4" component="h2" gutterBottom align="center">
+                                Application Features
+                            </Typography>
+                            <Grid container spacing={4} sx={{ mt: 2 }}>
+                                {features.map((feature, index) => (
+                                    <Grid size={{ xs: 12, md: 4 }} key={index}>
+                                        <Card sx={{ height: '100%', textAlign: 'center' }}>
+                                            <CardContent>
+                                                <Box sx={{ color: 'primary.main', mb: 2 }}>
+                                                    {feature.icon}
+                                                </Box>
+                                                <Typography variant="h6" component="h3" gutterBottom>
+                                                    {feature.title}
+                                                </Typography>
+                                                <Typography color="text.secondary">
+                                                    {feature.description}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
                     </Grid>
-                </Box>
+
+                    {/* Sidebar with User Suggestions */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <UserSuggestions />
+                    </Grid>
+                </Grid>
             </Container>
         );
     }
 
+    // Landing page for non-authenticated users
     return (
         <Container maxWidth="lg" component="main" role="main">
             <Box sx={{ mt: 8, mb: 6, textAlign: 'center' }}>
-                <HomeIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
+                <HomeIcon sx={{ fontSize: 80, color: 'primary.main', mb: 3 }} />
                 <Typography variant="h2" component="h1" gutterBottom>
-                    Welcome to MERN Stack App
+                    Welcome to MERN Social
                 </Typography>
                 <Typography variant="h5" color="text.secondary" paragraph>
-                    A full-stack web application built with MongoDB, Express, React, and Node.js
+                    A full-stack social media application built with the MERN stack.
                 </Typography>
-                <Box sx={{ mt: 4 }}>
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                     <Button
                         variant="contained"
                         size="large"
                         component={RouterLink}
                         to="/register"
                         startIcon={<PersonAdd />}
-                        sx={{ mr: 2 }}
-                        role="button"
                     >
                         Get Started
                     </Button>
@@ -183,53 +203,35 @@ const Home = () => {
                         component={RouterLink}
                         to="/login"
                         startIcon={<Login />}
-                        role="button"
                     >
                         Sign In
                     </Button>
                 </Box>
             </Box>
 
-            <Paper sx={{ p: 4, mb: 6 }}>
+            <Box sx={{ mt: 8 }}>
                 <Typography variant="h4" component="h2" gutterBottom align="center">
                     Features
                 </Typography>
                 <Grid container spacing={4} sx={{ mt: 2 }}>
                     {features.map((feature, index) => (
                         <Grid size={{ xs: 12, md: 4 }} key={index}>
-                            <Box sx={{ textAlign: 'center' }}>
-                                <Box sx={{ color: 'primary.main', mb: 2 }}>
-                                    {feature.icon}
-                                </Box>
-                                <Typography variant="h6" component="h3" gutterBottom>
-                                    {feature.title}
-                                </Typography>
-                                <Typography color="text.secondary">
-                                    {feature.description}
-                                </Typography>
-                            </Box>
+                            <Card sx={{ height: '100%', textAlign: 'center' }}>
+                                <CardContent>
+                                    <Box sx={{ color: 'primary.main', mb: 2 }}>
+                                        {feature.icon}
+                                    </Box>
+                                    <Typography variant="h6" component="h3" gutterBottom>
+                                        {feature.title}
+                                    </Typography>
+                                    <Typography color="text.secondary">
+                                        {feature.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
                         </Grid>
                     ))}
                 </Grid>
-            </Paper>
-
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
-                <Typography variant="h5" gutterBottom>
-                    Ready to get started?
-                </Typography>
-                <Typography color="text.secondary" paragraph>
-                    Create an account to access all features and start building your profile.
-                </Typography>
-                <Button
-                    variant="contained"
-                    size="large"
-                    component={RouterLink}
-                    to="/register"
-                    startIcon={<PersonAdd />}
-                    role="button"
-                >
-                    Create Account
-                </Button>
             </Box>
         </Container>
     );

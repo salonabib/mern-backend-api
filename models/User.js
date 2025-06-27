@@ -47,6 +47,24 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Bio cannot exceed 500 characters']
     },
+    // Social media features
+    about: {
+        type: String,
+        trim: true,
+        maxlength: [500, 'About cannot exceed 500 characters']
+    },
+    photo: {
+        data: Buffer,
+        contentType: String
+    },
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     isActive: {
         type: Boolean,
         default: true

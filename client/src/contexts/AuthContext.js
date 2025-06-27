@@ -206,10 +206,29 @@ export const AuthProvider = ({ children }) => {
     // Update user profile
     const updateProfile = useCallback(async (profileData) => {
         try {
-            const res = await api.put('/auth/profile', profileData);
+            // Create FormData if there's a file upload
+            let data;
+            let headers = {};
+
+            if (profileData.photo instanceof File) {
+                data = new FormData();
+                Object.keys(profileData).forEach(key => {
+                    if (key === 'photo') {
+                        data.append('photo', profileData.photo);
+                    } else {
+                        data.append(key, profileData[key]);
+                    }
+                });
+                // Don't set Content-Type for FormData, let browser set it with boundary
+            } else {
+                data = profileData;
+                headers = { 'Content-Type': 'application/json' };
+            }
+
+            const res = await api.put('/users/profile', data, { headers });
             dispatch({
                 type: AUTH_ACTIONS.USER_LOADED,
-                payload: res.data.user,
+                payload: res.data.data,
             });
             return { success: true };
         } catch (error) {

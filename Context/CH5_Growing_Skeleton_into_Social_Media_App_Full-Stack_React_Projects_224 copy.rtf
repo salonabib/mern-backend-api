@@ -1,0 +1,3875 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fmodern\fcharset0 Courier;
+\f3\fmodern\fcharset0 Courier-Bold;\f4\froman\fcharset0 TimesNewRomanPSMT;\f5\fnil\fcharset0 Menlo-Bold;
+}
+{\colortbl;\red255\green255\blue255;\red46\green44\blue57;\red198\green0\blue34;\red66\green71\blue76;
+\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c23922\c23137\c28627;\cssrgb\c82745\c0\c17647;\cssrgb\c32941\c34902\c36863;
+\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs75 \cf2 Growing the Skeleton into a Social Media\
+Application\
+
+\fs40 Social media is an integral part of the web these days, and many of the user-cen-\
+tric web applications we build end up requiring a social component down the line\
+to drive user engagement.\
+For our first real-world MERN application, we will modify the MERN skeleton ap-\
+plication we developed in \cf3 Chapter 3\cf2 , Building a Backend with MongoDB, Express,\
+and Node, and \cf3 Chapter 4\cf2 , Adding a React Frontend to Complete MERN, to build a\
+simple social media application in this chapter. While doing this, you will learn\
+how to extend the integration of the MERN stack technologies and add new fea-\
+tures to grow your own full-stack web applications.\
+In this chapter, we will go over the following topics:\
+Introducing MERN Social\
+Updating the user profile\
+Following users in MERN Social\
+Posting messages with photos\
+Implementing interactions on posts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Growing the Skeleton into a Social Media Applicat\'85\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Summary Introducing MERN Social
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Introducing MERN Social\
+
+\fs40 MERN Social is a social media application with rudimentary features inspired by\
+existing social media platforms such as Facebook and Twitter. The main purpose\
+of this application is to demonstrate how to use the MERN stack technologies to\
+implement features that allow users to connect or follow each other, and interact\
+over shared content. While building out MERN Social in this chapter, we will go\
+over the implementation of the following social media-flavored features:\
+User profile with a description and a photo\
+Users following each other\
+Who to follow suggestions\
+Posting messages with photos\
+Newsfeed with posts from followed users\
+Listing posts by user\
+Liking posts\
+Commenting on posts\
+You can extend these implementations further, as desired, for more complex fea-\
+tures. The MERN Social home page looks as follows:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs36\fsmilli18333 \cf5 The code for the complete MERN Social application is available on GitHub at\
+\cf3 https://github.com/PacktPublishing/Full-Stack-React-Projects-Second-\
+Edition/tree/master/Chapter05/mern-social\cf5 . You can clone this code and run\
+the application as you go through the code explanations for the rest of this\
+chapter.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf2 The views needed for the MERN Social application will be developed by extending\
+and modifying the existing React components in the MERN skeleton application.\
+The following component tree shows all the custom React components that make\
+up the MERN Social frontend and also exposes the composition structure we will\
+use to build out the views in the rest of this chapter:\
+Besides updating the existing components, we will also add new custom compo-\
+nents to compose views, including a Newsfeed view where the user can create a\
+new post and also browse a list of all the posts from people they follow on MERN\
+Social. In the next section, we will begin by updating the user profile to demon-\
+strate how to upload a profile photo and add a short bio for each user on the plat-\
+form.\
+\cf3 Growing the Skeleton into a Social Media Ap\'85 
+\fs35\fsmilli17780 \cf2 Introducing MERN Social\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Updating the user profile
+\fs75 \cf2 Updating the user profile\
+
+\fs40 The existing skeleton application only has support for a user's name, email, and\
+password. But in MERN Social, we will allow users to add a description about\
+themselves, as well as upload a profile photo while editing the profile after sign-\
+ing up, as shown in the following screenshot:\
+In order to implement this feature update, we need to modify both the user back-\
+end and frontend. In the following sections, we will learn how to update the user\
+model and user update API in the backend, and then the user profile and user\
+profile edit form views in the frontend to add a short description and a profile\
+photo for users in MERN Social.\
+\cf3 Introducing MERN Social 
+\fs35\fsmilli17780 \cf2 Updating the user profile\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Adding an about description
+\fs75 \cf2 Adding an about description\
+
+\fs40 To store the short description that's entered in the 
+\f1\fs40\fsmilli20333 \cf2 about
+\f0\fs40 \cf2  field by a user, we need\
+to add an 
+\f1\fs40\fsmilli20333 \cf2 about
+\f0\fs40 \cf2  field to the user model in 
+\f1\fs40\fsmilli20333 \cf2 server/models/user.model.js
+\f0\fs40 \cf2 :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 about: \{\
+type: String,\
+trim: true\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Then, to get the description as input from the user, we need to add a multiline\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 TextField
+\f0\fs40 \cf2  to the 
+\f1\fs40\fsmilli20333 \cf2 EditProfile
+\f0\fs40 \cf2  form and handle the value change the same way\
+we did for the user's name input.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <TextField\
+id="multiline-flexible"\
+label="About"\
+multiline\
+rows="2"\
+value=\{values.about\}\
+onChange=\{handleChange('about')\}\
+/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Finally, to show the description text that was added to the 
+\f1\fs40\fsmilli20333 \cf2 about
+\f0\fs40 \cf2  field on the user\
+profile page, we can add it to the existing profile view.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <ListItem> <ListItemText primary=\{this.state.user.about\}/> </ListItem>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 With this modification to the user feature in the MERN skeleton code, users can\
+now add and update a description about themselves to be displayed on their pro-\
+files. Next, we will add the ability to upload a photo to complete the user profile.\
+\cf3 Updating the user profile 
+\fs35\fsmilli17780 \cf2 Adding an about description\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Uploading a profile photo
+\fs75 \cf2 Uploading a profile photo\
+
+\fs40 Allowing a user to upload a profile photo will require that we store the uploaded\
+image file and retrieve it on request to load it in the view. There are multiple ways\
+of implementing this upload feature while considering the different file storage\
+options:\
+Server filesystem: Upload and save files to a server filesystem and store the\
+URL in MongoDB.\
+External file storage: Save files to external storage such as Amazon S3 and\
+store the URL in MongoDB.\
+Store as data in MongoDB: Save files that are small in size (less than 16 MB)\
+to MongoDB as data of the Buffer type.\
+For MERN Social, we will assume that the photo files that are uploaded by the\
+user will be small in size and demonstrate how to store these files in MongoDB for\
+the profile photo upload feature. In \cf3 Chapter 8\cf2 , Extending the Marketplace for Or-\
+ders and Payments, we will discuss how to store larger files in MongoDB using\
+GridFS.\
+To implement this photo upload feature, in the following sections, we will do the\
+following:\
+Update the user model to store the photo.\
+Integrate updated frontend views to upload the photo from the client- side.\
+Modify the user update controller in the backend to process the uploaded pho-\
+to.\
+\cf3 Adding an about description 
+\fs35\fsmilli17780 \cf2 Uploading a profile photo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Updating the user model to store a photo in \'85
+\fs75 \cf2 Updating the user model to store a photo in\
+MongoDB\
+
+\fs40 In order to store the uploaded profile photo directly in the database, we will up-\
+date the user model to add a 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  field that stores the file as data of the 
+\f1\fs40\fsmilli20333 \cf2 Buffer\
+
+\f0\fs40 \cf2 type, along with the file's 
+\f1\fs40\fsmilli20333 \cf2 contentType
+\f0\fs40 \cf2 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/models/user.model.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 photo: \{\
+data: Buffer,\
+contentType: String\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 An image file that's uploaded by the user from the client- side will be converted\
+into binary data and stored in this 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  field for documents in the Users collec-\
+tion in MongoDB. Next, we will look at how to upload the file from the frontend.\
+\cf3 Uploading a profile photo 
+\fs35\fsmilli17780 \cf2 Updating the user model to store a photo in Mong\'85\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Uploading a photo from the edit form
+\fs75 \cf2 Uploading a photo from the edit form\
+
+\fs40 Users will be able to upload an image file from their local files when editing the\
+profile. In order to implement this interaction, we will update the 
+\f1\fs40\fsmilli20333 \cf2 EditProfile\
+
+\f0\fs40 \cf2 component in 
+\f1\fs40\fsmilli20333 \cf2 client/user/EditProfile.js
+\f0\fs40 \cf2  with an upload photo option and\
+then attach the user selected file in the form data that's submitted to the server.\
+We will discuss this in the following sections.\
+\cf3 Updating the user model to store a photo in \'85 
+\fs35\fsmilli17780 \cf2 Uploading a photo from the edit form\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 File input with Material-UI
+\fs75 \cf2 File input with Material-UI\
+
+\fs40 We will utilize the HTML5 file input type to let the user select an image from their\
+local files. The file input will return the filename in the change event when the\
+user selects a file. We will add the file input element to the edit profile form as fol-\
+lows:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <input accept="image/*" type="file"\
+onChange=\{handleChange('photo')\}\
+style=\{\{display:'none'\}\}\
+id="icon-button-file" />\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 To integrate this file 
+\f1\fs40\fsmilli20333 \cf2 input
+\f0\fs40 \cf2  element with Material-UI components, we apply 
+\f1\fs40\fsmilli20333 \cf2 dis\uc0\u8208 \
+play:none
+\f0\fs40 \cf2  to hide the 
+\f1\fs40\fsmilli20333 \cf2 input
+\f0\fs40 \cf2  element from the view, then add a Material-UI but-\
+ton inside the label for this file input. This way, the view displays the Material-UI\
+button instead of the HTML5 file input element. The 
+\f1\fs40\fsmilli20333 \cf2 label
+\f0\fs40 \cf2  is added as follows:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <label htmlFor="icon-button-file">\
+<Button variant="contained" color="default" component="span">\
+Upload <FileUpload/>\
+</Button>\
+</label>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 When the Button's 
+\f1\fs40\fsmilli20333 \cf2 component
+\f0\fs40 \cf2  prop is set to 
+\f1\fs40\fsmilli20333 \cf2 span
+\f0\fs40 \cf2 , the 
+\f1\fs40\fsmilli20333 \cf2 Button
+\f0\fs40 \cf2  component ren-\
+ders as a 
+\f1\fs40\fsmilli20333 \cf2 span
+\f0\fs40 \cf2  element inside the 
+\f1\fs40\fsmilli20333 \cf2 label
+\f0\fs40 \cf2  element. A click on the 
+\f1\fs40\fsmilli20333 \cf2 Upload
+\f0\fs40 \cf2  span or\
+label is registered by the file input with the same ID as the label, and as a result,\
+the file select dialog is opened. Once the user selects a file, we can set it to state in\
+the call to 
+\f1\fs40\fsmilli20333 \cf2 handleChange(...)
+\f0\fs40 \cf2  and display the name in the view, as shown in\
+the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <span className=\{classes.filename\}>\
+\{values.photo ? values.photo.name : ''\}\
+</span>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This way, the user will see the name of the file they are trying to upload as the\
+profile photo. With the file selected for uploading, next, we have to attach and\
+send this file with the request to the server to update the user information in the\
+database.\
+\cf3 Uploading a photo from the edit form 
+\fs35\fsmilli17780 \cf2 File input with Material-UI\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Form submission with the file attached
+\fs75 \cf2 Form submission with the file attached\
+
+\fs40 Uploading files to the server with a form requires a multipart form submission.\
+This is in contrast to the stringified object we sent in previous implementations of\
+fetch. We will modify the 
+\f1\fs40\fsmilli20333 \cf2 EditProfile
+\f0\fs40 \cf2  component so that it uses the 
+\f1\fs40\fsmilli20333 \cf2 FormData\
+
+\f0\fs40 \cf2 API to store the form data in the format needed for encoding in the 
+\f1\fs40\fsmilli20333 \cf2 multi\uc0\u8208 \
+part/form-data
+\f0\fs40 \cf2  type.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs36\fsmilli18333 \cf5 You can learn more about the FormData API at \cf3 developer.mozilla.org/en-\
+US/docs/Web/API/FormData\cf5 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf2 First, we will update the input 
+\f1\fs40\fsmilli20333 \cf2 handleChange
+\f0\fs40 \cf2  function so that we can store input\
+values for both the text fields and the file input, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const handleChange = name => event => \{\
+
+\f3\b const value = name === 'photo'\
+? event.target.files[0]\
+: event.target.value\
+
+\f2\b0 setValues(\{...values, [name]: value \})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Then, on form submission, we need to initialize 
+\f1\fs40\fsmilli20333 \cf2 FormData
+\f0\fs40 \cf2  and append the values\
+from the fields that were updated, as shown here.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const clickSubmit = () => \{\
+let userData = new FormData()\
+values.name && userData.append('name', values.name)\
+values.email && userData.append('email', values.email)\
+values.passoword && userData.append('passoword', values.passoword)\
+values.about && userData.append('about', values.about)\
+values.photo && userData.append('photo', values.photo)\
+...\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 After appending all the fields and values to it, 
+\f1\fs40\fsmilli20333 \cf2 userData
+\f0\fs40 \cf2  is sent with the fetch API\
+call to update the user, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/EditProfile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 update(\{\
+userId: match.params.userId\
+\}, \{\
+t: jwt.token\
+\}, 
+\f3\b userData
+\f2\b0 ).then((data) => \{\
+if (data && data.error) \{\
+setValues(\{...values, error: data.error\})\
+\} else \{\
+setValues(\{...values, 'redirectToProfile': true\})\
+\}\
+\})\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Since the content type of the data that's sent to the server is no longer 
+\f1\fs40\fsmilli20333 \cf2 'applica\uc0\u8208 \
+tion/json'
+\f0\fs40 \cf2 , we also need to modify the 
+\f1\fs40\fsmilli20333 \cf2 update
+\f0\fs40 \cf2  fetch method in 
+\f1\fs40\fsmilli20333 \cf2 api-user.js\
+
+\f0\fs40 \cf2 to remove 
+\f1\fs40\fsmilli20333 \cf2 Content-Type
+\f0\fs40 \cf2  from the headers in the 
+\f1\fs40\fsmilli20333 \cf2 fetch
+\f0\fs40 \cf2  call, as shown here.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/api-user.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const update = async (params, credentials, user) => \{\
+try \{\
+let response = await fetch('/api/users/' + params.userId, \{\
+method: 'PUT',\
+headers: \{\
+'Accept': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: user\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Now, if the user chooses to upload a profile photo when editing the profile, the\
+server will receive a request with the file attached, along with the other field val-\
+ues. Next, we need to modify the server-side code to be able to process this re-\
+quest.\
+\cf3 File input with Material-UI 
+\fs35\fsmilli17780 \cf2 Form submission with the file attached\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Processing a request containing a file upload
+\fs75 \cf2 Processing a request containing a file\
+upload\
+
+\fs40 On the server, to process the request to the update API that may now contain a\
+file, we will use the 
+\f1\fs40\fsmilli20333 \cf2 formidable
+\f0\fs40 \cf2  Node module. Run the following command from\
+the command line to install 
+\f1\fs40\fsmilli20333 \cf2 formidable
+\f0\fs40 \cf2 :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\b \cf2 yarn add formidable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\b0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 formidable
+\f0\fs40 \cf2  will allow the server to read the 
+\f1\fs40\fsmilli20333 \cf2 multipart
+\f0\fs40 \cf2  form data and give\
+us access to the fields and the file, if there are any. If there is a file, 
+\f1\fs40\fsmilli20333 \cf2 formidable\
+
+\f0\fs40 \cf2 will store it temporarily in the filesystem. We will read it from the filesystem us-\
+ing the 
+\f1\fs40\fsmilli20333 \cf2 fs
+\f0\fs40 \cf2  module, which will retrieve the file type and data, and store it in the\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  field in the user model. The 
+\f1\fs40\fsmilli20333 \cf2 formidable
+\f0\fs40 \cf2  code will go in the 
+\f1\fs40\fsmilli20333 \cf2 update
+\f0\fs40 \cf2  con-\
+troller in 
+\f1\fs40\fsmilli20333 \cf2 user.controller.js
+\f0\fs40 \cf2 , as follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f3\b \cf2 import formidable from 'formidable'\
+import fs from 'fs'\
+
+\f2\b0 const update = async (req, res) => \{\
+
+\f3\b let form = new formidable.IncomingForm()\
+form.keepExtensions = true\
+form.parse
+\f2\b0 (req, 
+\f3\b async
+\f2\b0  (err, fields, files) => \{\
+if (err) \{\
+return res.status(400).json(\{\
+error: "Photo could not be uploaded"\
+\})\
+\}\
+let user = req.profile\
+user = extend(user, fields)\
+user.updated = Date.now()\
+
+\f3\b if(files.photo)\{\
+user.photo.data = fs.readFileSync(files.photo.path)\
+user.photo.contentType = files.photo.type\
+\}\
+
+\f2\b0 try \{\
+await user.save()\
+user.hashed_password = undefined\
+user.salt = undefined\
+res.json(user)\
+\} catch (err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This will store the uploaded file as data in the database. Next, we will set up file\
+retrieval so that we can access and display the photo that's uploaded by the user\
+in the frontend views.\
+\cf3 Form submission with the file attached 
+\fs35\fsmilli17780 \cf2 Processing a request containing a file upload\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Retrieving a profile photo
+\fs75 \cf2 Retrieving a profile photo\
+
+\fs40 The simplest option to retrieve the image stored in the database and then show it\
+in a view is to set up a route that will fetch the data and return it as an image file\
+to the requesting client. In this section, we will learn how to set up this route to\
+expose a photo URL, as well as how to use this URL to display the photo in the\
+frontend views.\
+\cf3 Processing a request containing a file upload 
+\fs35\fsmilli17780 \cf2 Retrieving a profile photo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Profile photo URL
+\fs75 \cf2 Profile photo URL\
+
+\fs40 We will set up a route to the photo stored in the database for each user, and also\
+add another route that will fetch a default photo if the given user did not upload a\
+profile photo. These routes will be defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/user.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/users/photo/:userId')\
+.get(userCtrl.photo, userCtrl.defaultPhoto)\
+router.route('/api/users/defaultphoto')\
+.get(userCtrl.defaultPhoto)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We will look for the photo in the 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  controller method and, if found, send it in\
+the response to the request at the photo route; otherwise, we'll call 
+\f1\fs40\fsmilli20333 \cf2 next()
+\f0\fs40 \cf2  to re-\
+turn the default photo, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const photo = (req, res, next) => \{\
+if(req.profile.photo.data)\{\
+res.set("Content-Type", req.profile.photo.contentType)\
+return res.send(req.profile.photo.data)\
+\}\
+
+\f3\b next()\
+
+\f2\b0 \}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The default photo is retrieved and sent from the server's file system, as shown\
+here.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 import profileImage from './../../client/assets/images/profile-pic.png'\
+const defaultPhoto = (req, res) => \{\
+return res.sendFile(process.cwd()+profileImage)\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We can use the route defined here to display the photo in the views, as described\
+in the next section.\
+\cf3 Retrieving a profile photo 
+\fs35\fsmilli17780 \cf2 Profile photo URL\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Showing a photo in a view
+\fs75 \cf2 Showing a photo in a view\
+
+\fs40 With the photo URL routes set up to retrieve the photo, we can simply use these in\
+the 
+\f1\fs40\fsmilli20333 \cf2 img
+\f0\fs40 \cf2  element's 
+\f1\fs40\fsmilli20333 \cf2 src
+\f0\fs40 \cf2  attribute to load the photo in the view. For example, in the\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component, we use the user ID from the 
+\f1\fs40\fsmilli20333 \cf2 values
+\f0\fs40 \cf2  in the state to construct\
+the photo URL, as shown in the following code.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const photoUrl = values.user._id\
+? `/api/users/photo/$\{values.user._id\}?$\{new Date().getTime()\}`\
+: '/api/users/defaultphoto'\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 To ensure the 
+\f1\fs40\fsmilli20333 \cf2 img
+\f0\fs40 \cf2  element reloads in the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view after the photo is updat-\
+ed, we have to add a time value to the photo URL to bypass the browser's default\
+image caching behavior.\
+Then, we can set the 
+\f1\fs40\fsmilli20333 \cf2 photoUrl
+\f0\fs40 \cf2  to the Material-UI 
+\f1\fs40\fsmilli20333 \cf2 Avatar
+\f0\fs40 \cf2  component, which ren-\
+ders the linked image in the view:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 <Avatar src=\{photoUrl\}/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The updated user profile in MERN Social can now display a user uploaded profile\
+photo and an 
+\f1\fs40\fsmilli20333 \cf2 about
+\f0\fs40 \cf2  description, as shown in the following screenshot:\
+We have successfully updated the MERN skeleton application code to let users up-\
+load a profile photo and add a short bio description to their profiles. In the next\
+section, we will update this further and implement the social media flavored fea-\
+ture that allows users to follow each other.\
+\cf3 Profile photo URL 
+\fs35\fsmilli17780 \cf2 Showing a photo in a view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Following users in MERN Social
+\fs75 \cf2 Following users in MERN Social\
+
+\fs40 In MERN Social, users will be able to follow each other. Each user will have a list\
+of followers and a list of people they follow. Users will also be able to see a list of\
+users they can follow; in other words, the users in MERN Social they are not al-\
+ready following. In the following sections, we will learn how to update the full-\
+stack code to implement these features.\
+\cf3 Showing a photo in a view 
+\fs35\fsmilli17780 \cf2 Following users in MERN Social\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Following and unfollowing
+\fs75 \cf2 Following and unfollowing\
+
+\fs40 In order to keep track of which user is following which other users, we will have\
+to maintain two lists for each user. When one user follows or unfollows another\
+user, we will update one's 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  list and the other's 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  list. First,\
+we will update the backend to store and update these lists, then modify the front-\
+end views to allow users to perform follow and unfollow actions.\
+\cf3 Following users in MERN Social 
+\fs35\fsmilli17780 \cf2 Following and unfollowing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Updating the user model
+\fs75 \cf2 Updating the user model\
+
+\fs40 To store the list of 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  in the database, we will need to\
+update the user model with two arrays of user references, as shown in the follow-\
+ing code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/models/user.model.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 following: [\{type: mongoose.Schema.ObjectId, ref: 'User'\}],\
+followers: [\{type: mongoose.Schema.ObjectId, ref: 'User'\}]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 These references will point to the users in the collection being followed by or fol-\
+lowing the given user. Next, we will update the user controllers to ensure the de-\
+tails of the users that are referenced in these lists are returned in a response to\
+client-side requests.\
+\cf3 Following and unfollowing 
+\fs35\fsmilli17780 \cf2 Updating the user model\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Updating the userByID controller method
+\fs75 \cf2 Updating the userByID controller method\
+
+\fs40 When a single user is retrieved from the backend, we want the 
+\f1\fs40\fsmilli20333 \cf2 user
+\f0\fs40 \cf2  object to in-\
+clude the names and IDs of the users referenced in the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 follow\uc0\u8208 \
+ers
+\f0\fs40 \cf2  arrays. To retrieve these details, we need to update the 
+\f1\fs40\fsmilli20333 \cf2 userByID
+\f0\fs40 \cf2  controller\
+method so that it populates the returned user object, as shown in the highlighted\
+code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const userByID = async (req, res, next, id) => \{\
+try \{\
+let user = await User.findById(id)\
+
+\f3\b .populate('following', '_id name')\
+.populate('followers', '_id name')\
+
+\f2\b0 .exec()\
+if (!user)\
+return res.status('400').json(\{\
+error: "User not found"\
+\})\
+req.profile = user\
+next()\
+\} catch (err) \{\
+return res.status('400').json(\{\
+error: "Could not retrieve user"\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We use the Mongoose 
+\f1\fs40\fsmilli20333 \cf2 populate
+\f0\fs40 \cf2  method to specify that the user object that's re-\
+turned from the query should contain the name and ID of the users referenced in\
+the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  lists. This will give us the names and IDs of the\
+user references in the 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  lists when we fetch the user\
+with the read API call.\
+With the user model updated, we are ready to add API endpoints that will update\
+these lists to either add or remove users from the lists, as discussed in the next\
+section.\
+\cf3 Updating the user model 
+\fs35\fsmilli17780 \cf2 Updating the userByID controller method\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Adding APIs to follow and unfollow
+\fs75 \cf2 Adding APIs to follow and unfollow\
+
+\fs40 When a user follows or unfollows another user from the view, both users' records\
+in the database will be updated in response to the 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  requests.\
+Set up 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  routes in 
+\f1\fs40\fsmilli20333 \cf2 user.routes.js
+\f0\fs40 \cf2  as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/user.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/users/follow')\
+.put(authCtrl.requireSignin,\
+userCtrl.addFollowing,\
+userCtrl.addFollower)\
+router.route('/api/users/unfollow')\
+.put(authCtrl.requireSignin,\
+userCtrl.removeFollowing,\
+userCtrl.removeFollower)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 addFollowing
+\f0\fs40 \cf2  controller method in the user controller will update the 
+\f1\fs40\fsmilli20333 \cf2 fol\uc0\u8208 \
+lowing
+\f0\fs40 \cf2  array for the current user by pushing the followed user's reference into\
+the array, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const addFollowing = async (req, res, next) => \{\
+try\{\
+await User.findByIdAndUpdate(req.body.userId,\
+\{
+\f3\b $push
+\f2\b0 : \{following: req.body.followId\}\})\
+next()\
+\}catch(err)\{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 On successful update of the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  array, 
+\f1\fs40\fsmilli20333 \cf2 next()
+\f0\fs40 \cf2  is invoked, and as a result,\
+the 
+\f1\fs40\fsmilli20333 \cf2 addFollower
+\f0\fs40 \cf2  method is executed to add the current user's reference to the\
+followed user's 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  array. The 
+\f1\fs40\fsmilli20333 \cf2 addFollower
+\f0\fs40 \cf2  method is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const addFollower = async (req, res) => \{\
+try\{\
+let result = await User.findByIdAndUpdate(req.body.followId,\
+\{
+\f3\b $push
+\f2\b0 : \{followers: req.body.userId\}\},\
+\{new: true\})\
+.populate('following', '_id name')\
+.populate('followers', '_id name')\
+.exec()\
+result.hashed_password = undefined\
+result.salt = undefined\
+res.json(result)\
+\}catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 For unfollowing, the implementation is similar. The 
+\f1\fs40\fsmilli20333 \cf2 removeFollowing
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 re\uc0\u8208 \
+moveFollower
+\f0\fs40 \cf2  controller methods update the respective 
+\f1\fs40\fsmilli20333 \cf2 'following'
+\f0\fs40 \cf2  and\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 'followers'
+\f0\fs40 \cf2  arrays by removing the user references with 
+\f1\fs40\fsmilli20333 \cf2 $pull
+\f0\fs40 \cf2  instead of\
+
+\f1\fs40\fsmilli20333 \cf2 $push
+\f0\fs40 \cf2 . 
+\f1\fs40\fsmilli20333 \cf2 removeFollowing
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 removeFollower
+\f0\fs40 \cf2  will look as follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const 
+\f3\b removeFollowing
+\f2\b0  = async (req, res, next) => \{\
+try\{\
+await User.findByIdAndUpdate(req.body.userId,\
+\{
+\f3\b $pull
+\f2\b0 : \{following: req.body.unfollowId\}\})\
+next()\
+\}catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+const 
+\f3\b removeFollower
+\f2\b0  = async (req, res) => \{\
+try\{\
+let result = await User.findByIdAndUpdate(req.body.unfollowId,\
+\{
+\f3\b $pull
+\f2\b0 : \{followers: req.body.userId\}\},\
+\{new: true\})\
+.populate('following', '_id name')\
+.populate('followers', '_id name')\
+.exec()\
+result.hashed_password = undefined\
+result.salt = undefined\
+res.json(result)\
+\}catch(err)\{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The user backend on the server-side is ready for the follow and unfollow features.\
+Next, we will update the frontend to utilize these new backend APIs and complete\
+this feature.\
+\cf3 Updating the userByID controller method 
+\fs35\fsmilli17780 \cf2 Adding APIs to follow and unfollow\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Accessing the follow and unfollow APIs in views
+\fs75 \cf2 Accessing the follow and unfollow APIs in\
+views\
+
+\fs40 In order to access these API calls in the views, we will update 
+\f1\fs40\fsmilli20333 \cf2 api-user.js
+\f0\fs40 \cf2  with\
+the 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  fetch methods. The 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  methods\
+will be similar, making calls to the respective routes with the current user's ID\
+and credentials, and the followed or unfollowed user's ID. The 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  method\
+will be as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/api-user.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const follow = async (params, credentials, followId) => \{\
+try \{\
+let response = await fetch('/api/users/follow/', \{\
+method: 'PUT',\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: JSON.stringify(\{userId:params.userId, followId: followId\})\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  fetch method is similar; it takes the unfollowed user's ID and calls\
+the 
+\f1\fs40\fsmilli20333 \cf2 unfollow
+\f0\fs40 \cf2  API, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/api-user.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const unfollow = async (params, credentials, unfollowId) => \{\
+try \{\
+let response = await fetch('/api/users/unfollow/', \{\
+method: 'PUT',\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: JSON.stringify(\{userId:params.userId, unfollowId: unfollowId\})\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 With the API fetch code implemented, we can use these two methods to integrate\
+the backend updates in the views, as discussed in the next section, which will al-\
+low users to follow or unfollow another user in the application.\
+\cf3 Adding APIs to follow and unfollow 
+\fs35\fsmilli17780 \cf2 Accessing the follow and unfollow APIs in views\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Follow and unfollow buttons
+\fs75 \cf2 Follow and unfollow buttons\
+
+\fs40 The button that will allow a user to follow or unfollow another user will appear\
+conditionally, depending on whether the user is already followed or not by the\
+current user, as shown in the following screenshot:\
+In the following sections, we will add this button in a separate React component,\
+integrate it with the existing user profile view, and connect it to the follow and\
+unfollow fetch methods.\
+\cf3 Accessing the follow and unfollow APIs in views 
+\fs35\fsmilli17780 \cf2 Follow and unfollow buttons\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The FollowProfileButton component
+\fs75 \cf2 The FollowProfileButton component\
+
+\fs40 We will create a separate component for the follow button called 
+\f1\fs40\fsmilli20333 \cf2 FollowPro\uc0\u8208 \
+fileButton
+\f0\fs40 \cf2 , which will be added to the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component. This component\
+will show the 
+\f1\fs40\fsmilli20333 \cf2 Follow
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 Unfollow
+\f0\fs40 \cf2  button, depending on whether the current\
+user is already a follower of the user in the profile. The 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton\
+
+\f0\fs40 \cf2 component will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FollowProfileButton.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 export default function FollowProfileButton (props) \{\
+
+\f3\b const followClick = () => \{\
+props.onButtonClick(follow)\
+\}\
+const unfollowClick = () => \{\
+props.onButtonClick(unfollow)\
+\}\
+
+\f2\b0 return (<div>\
+\{ props.following\
+? (<Button variant="contained" color="secondary"\
+
+\f3\b onClick=\{unfollowClick\}
+\f2\b0 >Unfollow</Button>)\
+: (<Button variant="contained" color="primary"\
+
+\f3\b onClick=\{followClick\}
+\f2\b0 >Follow</Button>)\
+\}\
+</div>)\
+\}\
+FollowProfileButton.propTypes = \{\
+following: PropTypes.bool.isRequired,\
+onButtonClick: PropTypes.func.isRequired\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 When 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton
+\f0\fs40 \cf2  is added to the profile, the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  value will\
+be determined and sent from the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component as a prop to 
+\f1\fs40\fsmilli20333 \cf2 FollowPro\uc0\u8208 \
+fileButton
+\f0\fs40 \cf2 , along with the click handler that takes the specific 
+\f1\fs40\fsmilli20333 \cf2 follow
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 un\uc0\u8208 \
+follow
+\f0\fs40 \cf2  fetch API to be called as a parameter. The resulting profile views will look\
+as follows:\
+In order to integrate this 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton
+\f0\fs40 \cf2  component with the profile\
+view, we need to update the existing 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component, as discussed next.\
+\cf3 Follow and unfollow buttons 
+\fs35\fsmilli17780 \cf2 The FollowProfileButton component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Updating the Profile component
+\fs75 \cf2 Updating the Profile component\
+
+\fs40 In the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view, 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton
+\f0\fs40 \cf2  should only be shown when the\
+user views the profile of other users, so we need to modify the condition for\
+showing the 
+\f1\fs40\fsmilli20333 \cf2 Edit
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 Delete
+\f0\fs40 \cf2  buttons when viewing a profile, as follows:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 \{auth.isAuthenticated().user &&\
+auth.isAuthenticated().user._id == values.user._id\
+? (edit and delete buttons)\
+: (follow button)\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 In the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component, after the user data is successfully fetched in 
+\f1\fs40\fsmilli20333 \cf2 useEf\uc0\u8208 \
+fect
+\f0\fs40 \cf2 , we will check whether the signed-in user is already following the user in\
+the profile or not and set the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  value to the respective state, as shown in\
+the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 let following = 
+\f3\b checkFollow(data)\
+
+\f2\b0 setValues(\{...values, user: data, following: following\})\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 To determine the value to set in 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2 , the 
+\f1\fs40\fsmilli20333 \cf2 checkFollow
+\f0\fs40 \cf2  method will check\
+if the signed-in user exists in the fetched user's 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  list, then return 
+\f1\fs40\fsmilli20333 \cf2 match\
+
+\f0\fs40 \cf2 if found; otherwise, it will return 
+\f1\fs40\fsmilli20333 \cf2 undefined
+\f0\fs40 \cf2  if a match is not found. The 
+\f1\fs40\fsmilli20333 \cf2 check\uc0\u8208 \
+Follow
+\f0\fs40 \cf2  method is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const 
+\f3\b checkFollow
+\f2\b0  = (user) => \{\
+const match = user.followers.some((follower)=> \{\
+return follower._id == jwt.user._id\
+\})\
+return match\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component will also define the click handler for 
+\f1\fs40\fsmilli20333 \cf2 FollowProfile\uc0\u8208 \
+Button
+\f0\fs40 \cf2  so that the state of the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  can be updated when the follow or unfol-\
+low action completes, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const 
+\f3\b clickFollowButton
+\f2\b0  = (callApi) => \{\
+callApi(\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, values.user._id).then((data) => \{\
+if (data.error) \{\
+setValues(\{...values, error: data.error\})\
+\} else \{\
+setValues(\{...values, user: data, following: !values.following\})\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The click handler definition takes the fetch API call as a parameter and is passed\
+as a prop to 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton
+\f0\fs40 \cf2 , along with the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  value when it is\
+added to the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view, as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <FollowProfileButton following=\{this.state.following\} onButtonClick=\{this.
+\f3\b clickFollowButton
+\f2\b0 \}/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This will load 
+\f1\fs40\fsmilli20333 \cf2 FollowProfileButton
+\f0\fs40 \cf2  into the profile view, with all the necessary\
+conditions accounted for, and provide the current user the option to follow or un-\
+follow other users in the MERN Social application. Next, we will extend this fea-\
+ture to allow users to view the list of followings or followers in the user profile\
+view.\
+\cf3 The FollowProfileButton component 
+\fs35\fsmilli17780 \cf2 Updating the Profile component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Listing followings and followers
+\fs75 \cf2 Listing followings and followers\
+
+\fs40 In order to give users easy access to the users they are following and the users\
+who are following them on MERN Social, we will add these lists to their profile\
+views. In each user's profile, we will add a list of their followers and the people\
+they are following, as shown in the following screenshot:\
+The details of the users referenced in the 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  lists are al-\
+ready in the user object that is fetched using the 
+\f1\fs40\fsmilli20333 \cf2 read
+\f0\fs40 \cf2  API when the profile is\
+loaded. In order to render these separate lists of followers and followings, we will\
+create a new component called 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid
+\f0\fs40 \cf2 .\
+\cf3 Updating the Profile component 
+\fs35\fsmilli17780 \cf2 Listing followings and followers\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Making a FollowGrid component
+\fs75 \cf2 Making a FollowGrid component\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid
+\f0\fs40 \cf2  component will take a list of users as props, display the avatars\
+of the users with their names, and link them to each user's own profile. We can\
+add this component to the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view to display 
+\f1\fs40\fsmilli20333 \cf2 followings
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2 .\
+The 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid
+\f0\fs40 \cf2  component is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FollowGrid.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 export default function FollowGrid (props) \{\
+const classes = useStyles()\
+return (<div className=\{classes.root\}>\
+<GridList cellHeight=\{160\} className=\{classes.gridList\} cols=\{4\}>\
+\{props.people.map((person, i) => \{\
+return <GridListTile style=\{\{'height':120\}\} key=\{i\}>\
+<Link to=\{"/user/" + person._id\}>\
+<Avatar src=\{'/api/users/photo/'+person._id\}\
+className=\{classes.bigAvatar\}/>\
+<Typography className=\{classes.tileText\}>\
+\{person.name\}\
+</Typography>\
+</Link>\
+</GridListTile>\
+\})\}\
+</GridList>\
+</div>)\
+FollowGrid.propTypes = \{\
+people: PropTypes.array.isRequired\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 To add the 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid
+\f0\fs40 \cf2  component to the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view, we can place it as de-\
+sired in the view and pass the list of 
+\f1\fs40\fsmilli20333 \cf2 followers
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 followings
+\f0\fs40 \cf2  as the 
+\f1\fs40\fsmilli20333 \cf2 people\
+
+\f0\fs40 \cf2 prop:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 <FollowGrid people=\{props.user.followers\}/>\
+<FollowGrid people=\{props.user.following\}/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 As shown previously, in MERN Social, we chose to display the 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid
+\f0\fs40 \cf2  com-\
+ponents in tabs within the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component. We created a separate 
+\f1\fs40\fsmilli20333 \cf2 Profile\uc0\u8208 \
+Tabs
+\f0\fs40 \cf2  component using Material-UI tab components and added that to the 
+\f1\fs40\fsmilli20333 \cf2 Pro\uc0\u8208 \
+file
+\f0\fs40 \cf2  component. This 
+\f1\fs40\fsmilli20333 \cf2 ProfileTabs
+\f0\fs40 \cf2  component contains the two 
+\f1\fs40\fsmilli20333 \cf2 FollowGrid\
+
+\f0\fs40 \cf2 components with following and followers lists, along with a 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  compo-\
+nent that shows the posts by the user.\
+This 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component will be discussed later in this chapter. In the next sec-\
+tion, we will add a feature that will allow a user to discover other users on the\
+platform who they are not following yet.\
+\cf3 Listing followings and followers 
+\fs35\fsmilli17780 \cf2 Making a FollowGrid component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Finding people to follow
+\fs75 \cf2 Finding people to follow\
+
+\fs40 The Who to follow feature will show the signed-in user a list of people in MERN\
+Social that they are not currently following, thus giving them the option to follow\
+them or view their profiles, as shown in the following screenshot:\
+To implement this feature, we need to add a backend API that returns the list of\
+users not followed by the currently signed-in user, and then update the frontend\
+by adding a component that loads and displays this list of users.\
+\cf3 Making a FollowGrid component 
+\fs35\fsmilli17780 \cf2 Finding people to follow\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Fetching users not followed
+\fs75 \cf2 Fetching users not followed\
+
+\fs40 We will implement a new API on the server to query the database and fetch the\
+list of users the current user is not following. This route will be defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/user.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/users/findpeople/:userId')\
+.get(authCtrl.requireSignin, userCtrl.findPeople)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 In the 
+\f1\fs40\fsmilli20333 \cf2 findPeople
+\f0\fs40 \cf2  controller method, we will query the User collection in the\
+database to find the users that are not in the current user's 
+\f1\fs40\fsmilli20333 \cf2 following
+\f0\fs40 \cf2  list.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/user.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const findPeople = async (req, res) => \{\
+let following = req.profile.following\
+following.push(req.profile._id)\
+try \{\
+let users = await User.find(\{ _id:\{ 
+\f3\b $nin
+\f2\b0  : following \}\})\
+.select('name')\
+res.json(users)\
+\}catch(err)\{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This query will return an array of users that are not followed by the current user.\
+To use this list of users in the frontend, we will update the 
+\f1\fs40\fsmilli20333 \cf2 api-user.js
+\f0\fs40 \cf2  file and\
+add a fetch for this API. The 
+\f1\fs40\fsmilli20333 \cf2 findPeople
+\f0\fs40 \cf2  fetch method is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/api-user.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const findPeople = async (params, credentials, signal) => \{\
+try \{\
+let response = await fetch('/api/users/findpeople/' + params.userId, \{\
+method: 'GET',\
+signal: signal,\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\}\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We can use this 
+\f1\fs40\fsmilli20333 \cf2 findPeople
+\f0\fs40 \cf2  fetch method in the component that will display this\
+list of users. In the next section, we will create the FindPeople component for this\
+purpose.\
+\cf3 Finding people to follow 
+\fs35\fsmilli17780 \cf2 Fetching users not followed\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The FindPeople component
+\fs75 \cf2 The FindPeople component\
+
+\fs40 To display the who to follow feature, we will create a component called 
+\f1\fs40\fsmilli20333 \cf2 FindPeo\uc0\u8208 \
+ple
+\f0\fs40 \cf2 , which can be added to any of the views or rendered on its own. In this com-\
+ponent, we will fetch the users not being followed by calling the 
+\f1\fs40\fsmilli20333 \cf2 findPeople\
+
+\f0\fs40 \cf2 method in 
+\f1\fs40\fsmilli20333 \cf2 useEffect
+\f0\fs40 \cf2 , as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FindPeople.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 useEffect(() => \{\
+const abortController = new AbortController()\
+const signal = abortController.signal\
+findPeople(\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, signal).then((data) => \{\
+if (data && data.error) \{\
+console.log(data.error)\
+\} else \{\
+setValues(\{...values, users:data\})\
+\}\
+\})\
+return function cleanup()\{\
+abortController.abort()\
+\}\
+\}, [])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The fetched list of users will be iterated over and rendered in a Material-UI 
+\f1\fs40\fsmilli20333 \cf2 List\
+
+\f0\fs40 \cf2 component, with each list item containing the user's avatar, name, a link to the\
+profile page, and a 
+\f1\fs40\fsmilli20333 \cf2 Follow
+\f0\fs40 \cf2  button, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FindPeople.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <List>\
+\{values.users.map((item, i) => \{\
+return <span key=\{i\}>\
+<ListItem>\
+<ListItemAvatar className=\{classes.avatar\}>\
+<Avatar src=\{'/api/users/photo/'+item._id\}/>\
+</ListItemAvatar>\
+<ListItemText primary=\{item.name\}/>\
+<ListItemSecondaryAction className=\{classes.follow\}>\
+<Link to=\{"/user/" + item._id\}>\
+<IconButton variant="contained" color="secondary"\
+className=\{classes.viewButton\}>\
+<ViewIcon/>\
+</IconButton>\
+</Link>\
+<Button aria-label="Follow" variant="contained"\
+color="primary"\
+onClick=\{()=> \{clickFollow(item, i)\}\}>\
+Follow\
+</Button>\
+</ListItemSecondaryAction>\
+</ListItem>\
+</span>\
+\})\
+\}\
+</List>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Clicking the 
+\f1\fs40\fsmilli20333 \cf2 Follow
+\f0\fs40 \cf2  button will make a call to the follow API and update the list\
+of users to follow by splicing out the newly followed user. The 
+\f1\fs40\fsmilli20333 \cf2 clickFollow\
+
+\f0\fs40 \cf2 method implements this behavior as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FindPeople.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const clickFollow = (user, index) => \{\
+
+\f3\b follow
+\f2\b0 (\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, user._id).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+let toFollow = values.users\
+
+\f3\b toFollow.splice(index, 1)\
+
+\f2\b0 setValues(\{...values, users: toFollow, open: true,\
+
+\f3\b followMessage: `Following $\{user.name\}!`
+\f2\b0 \})\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We will also add a Material-UI 
+\f1\fs40\fsmilli20333 \cf2 Snackbar
+\f0\fs40 \cf2  component that will open temporarily\
+when the user is successfully followed in order to tell the user that they started\
+following this new user. 
+\f1\fs40\fsmilli20333 \cf2 Snackbar
+\f0\fs40 \cf2  will be added to the view code as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/FindPeople.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <Snackbar\
+anchorOrigin=\{\{\
+vertical: 'bottom',\
+horizontal: 'right',\
+\}\}\
+open=\{values.open\}\
+onClose=\{handleRequestClose\}\
+autoHideDuration=\{6000\}\
+message=\{<span className=\{classes.snack\}>
+\f3\b \{values.followMessage\}
+\f2\b0 </span>\}\
+/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 As shown in the following screenshot, 
+\f1\fs40\fsmilli20333 \cf2 Snackbar
+\f0\fs40 \cf2  will display the 
+\f1\fs40\fsmilli20333 \cf2 message
+\f0\fs40 \cf2  con-\
+taining the followed user's name at the bottom-right corner of the page, and then\
+auto-hide it after the set duration:\
+MERN Social users can now follow each other, view lists of followings and follow-\
+ers for each user, and also see a list of people they can follow. The main purpose\
+of following another user in MERN Social is to see and interact with their shared\
+posts. In the next section, we will look at the implementation of the post feature.\
+\cf3 Fetching users not followed 
+\fs35\fsmilli17780 \cf2 The FindPeople component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Posting on MERN Social
+\fs75 \cf2 Posting on MERN Social\
+
+\fs40 The post feature in MERN Social will allow users to share content on the MERN\
+Social application platform and also interact with each other over the content by\
+commenting on or liking a post, as shown in the following screenshot:\
+For this feature, we will implement a complete full-stack slice containing the post\
+backend and frontend. The post backend will be comprised of a new Mongoose\
+model for structuring the post data to be stored in the database, while the post\
+CRUD API endpoints will allow the frontend to interact with the Post collection in\
+the database. The post frontend will consist of post-related React components that\
+will allow users to view posts, add new posts, interact with posts, and delete their\
+own posts. In the following sections, we will define the data structure for posts in\
+the Post schema, and then learn how to incrementally add the post backend APIs\
+and frontend components according to the specific post-related feature we are\
+implementing.\
+\cf3 The FindPeople component 
+\fs35\fsmilli17780 \cf2 Posting on MERN Social\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Mongoose schema model for Post
+\fs75 \cf2 Mongoose schema model for Post\
+
+\fs40 To define the structure for storing details about each post and to store each post\
+as a document in a collection in MongoDB, we will define the Mongoose schema\
+for a post in 
+\f1\fs40\fsmilli20333 \cf2 server/models/post.model.js
+\f0\fs40 \cf2 . The Post schema will store a\
+post's text content, a photo, a reference to the user who posted, time of creation,\
+likes on the post from users, and comments on the post by users. The schema will\
+store these details in the following fields, each defined as shown with the corre-\
+sponding code.\
+Post text: 
+\f1\fs40\fsmilli20333 \cf2 text
+\f0\fs40 \cf2  will be a required field that needs to be provided by the user\
+on new post creation from the view:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 text: \{\
+type: String,\
+required: 'Text is required'\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Post photo: 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  will be uploaded from the user's local files during post cre-\
+ation and stored in MongoDB, similar to the user profile photo upload feature.\
+The photo will be optional for each post:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 photo: \{\
+data: Buffer,\
+contentType: String\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Post by: Creating a post will require a user to be signed-in first so that we can\
+store a reference to the user who is posting in the 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  field:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 postedBy: \{type: mongoose.Schema.ObjectId, ref: 'User'\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Created time: The 
+\f1\fs40\fsmilli20333 \cf2 created
+\f0\fs40 \cf2  time will be generated automatically at the time\
+of post creation in the database:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 created: \{ type: Date, default: Date.now \}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Likes: References to the users who liked a specific post will be stored in a\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  array:\
+
+\f2 \cf2 likes: [\{type: mongoose.Schema.ObjectId, ref: 'User'\}]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Comments: Each comment on a post will contain text content, the time of cre-\
+ation, and a reference to the user who posted the comment. Each post will\
+have an array of 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2 :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 comments: [\{\
+text: String,\
+created: \{ type: Date, default: Date.now \},\
+postedBy: \{ type: mongoose.Schema.ObjectId, ref: 'User'\}\
+\}]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This schema definition will enable us to implement all the post-related features in\
+MERN Social. Next, we will start with a discussion of the Newsfeed feature to\
+learn how to compose frontend React components.\
+\cf3 Posting on MERN Social 
+\fs35\fsmilli17780 \cf2 Mongoose schema model for Post\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The Newsfeed component
+\fs75 \cf2 The Newsfeed component\
+
+\fs40 On MERN Social, each user will see posts that have been shared by people they\
+follow, along with posts that they themselves share, all aggregated in a Newsfeed\
+view. Before delving further into the implementations of the post-related features\
+in MERN Social, we will look at the composition of this Newsfeed view to show-\
+case a basic example of how to design nested UI components that share state. The\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component will contain two main child components \'96 a new post form\
+and a list of posts from followed users, as shown in the following screenshot:\
+The basic structure of the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component will be as follows, with the 
+\f1\fs40\fsmilli20333 \cf2 New\uc0\u8208 \
+Post
+\f0\fs40 \cf2  component and the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component inside it.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Newsfeed.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <Card>\
+<Typography type="title"> Newsfeed </Typography>\
+<Divider/>\
+
+\f3\b <NewPost addUpdate=\{addPost\}/>\
+
+\f2\b0 <Divider/>\
+
+\f3\b <PostList removeUpdate=\{removePost\} posts=\{posts\}/>\
+
+\f2\b0 </Card>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 As the parent component, 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  will control the state of the posts' data that's\
+rendered in the child components. It will provide a way to update the state of\
+posts across the components when the post data is modified within the child com-\
+ponents, such as the addition of a new post in the 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  component or the re-\
+moval of a post from the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component.\
+Here specifically, in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component we initially make a call to the\
+server to fetch a list of posts from people that the currently signed-in user follows.\
+Then we set this list of posts to the state to be rendered in the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  compo-\
+nent.. The 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component provides the 
+\f1\fs40\fsmilli20333 \cf2 addPost
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 removePost
+\f0\fs40 \cf2  func-\
+tions to 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2 , which will be used when a new post is created\
+or an existing post is deleted to update the list of posts in the Newsfeed's state and\
+ultimately reflect it in the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2 .\
+The 
+\f1\fs40\fsmilli20333 \cf2 addPost
+\f0\fs40 \cf2  function defined in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component will take the new post\
+that was created in the 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  component and add it to the posts in the state.\
+The 
+\f1\fs40\fsmilli20333 \cf2 addPost
+\f0\fs40 \cf2  function will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Newsfeed.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const addPost = (post) => \{\
+const updatedPosts = [...posts]\
+updatedPosts.unshift(post)\
+setPosts(updatedPosts)\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 removePost
+\f0\fs40 \cf2  function defined in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component will take the\
+deleted post from the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component in 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  and remove it from the posts\
+in the state. The 
+\f1\fs40\fsmilli20333 \cf2 removePost
+\f0\fs40 \cf2  function will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Newsfeed.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const removePost = (post) => \{\
+const updatedPosts = [...posts]\
+const index = updatedPosts.indexOf(post)\
+updatedPosts.splice(index, 1)\
+setPosts(updatedPosts)\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 As the posts are updated in the Newsfeed's state this way, the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  will ren-\
+der the changed list of posts to the viewer. This mechanism of relaying state up-\
+dates from parent to child components and back will be applied across other fea-\
+tures, such as comment updates in a post and when a 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  is rendered for\
+an individual user in the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component.\
+To begin the complete implementation of the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2 , we need to be able to\
+fetch a list of posts from the server and display it in the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2 . In the next sec-\
+tion, we will make this 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component for the frontend and add PostList\
+API endpoints to the backend.\
+\cf3 Mongoose schema model for Post 
+\fs35\fsmilli17780 \cf2 The Newsfeed component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Listing posts
+\fs75 \cf2 Listing posts\
+
+\fs40 In MERN Social, we list posts in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  and in the profile of each user. We\
+will create a generic 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component that will render any list of posts pro-\
+vided to it, which we can use in both the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  and the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  components.\
+The 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/PostList.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 export default function PostList (props) \{\
+return (\
+<div style=\{\{marginTop: '24px'\}\}>\
+\{props.posts.map((item, i) => \{\
+return <Post post=\{item\} key=\{i\}\
+onRemove=\{props.removeUpdate\}/>\
+\})\
+\}\
+</div>\
+)\
+\}\
+PostList.propTypes = \{\
+posts: PropTypes.array.isRequired,\
+removeUpdate: PropTypes.func.isRequired\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component will iterate through the list of posts passed to it as\
+props from the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  or the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2 , and pass the data of each post to a\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component that will render details of the post. 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  will also pass the\
+
+\f1\fs40\fsmilli20333 \cf2 removeUpdate
+\f0\fs40 \cf2  function that was sent as a prop from the parent component to\
+the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component so that the state can be updated when a single post is delet-\
+ed. Next, we will complete the post lists in the Newsfeed view after fetching the\
+relevant posts from the backend.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf3 The Newsfeed component 
+\fs35\fsmilli17780 \cf2 Listing posts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Listing posts in Newsfeed
+\fs75 \cf2 Listing posts in Newsfeed\
+
+\fs40 We will set up an API on the server that queries the Post collection and returns a\
+list of posts from the people a specified user is following. Then, to populate the\
+Newsfeed view, these posts will be retrieved in the frontend by calling this API\
+and they will be displayed in the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  in 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2 .\
+\cf3 Listing posts 
+\fs35\fsmilli17780 \cf2 Listing posts in Newsfeed\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Newsfeed API for posts
+\fs75 \cf2 Newsfeed API for posts\
+
+\fs40 To implement the Newsfeed-specific API, we need to add the route endpoint that\
+will receive the request for Newsfeed posts and respond accordingly to the re-\
+questing client- side.\
+On the backend, we need to define the route path that will receive the request for\
+retrieving Newsfeed posts for a specific user, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 server/routes/post.routes.js\
+
+\f2\fs40 router.route('/api/posts/feed/:userId')\
+.get(authCtrl.requireSignin, postCtrl.listNewsFeed)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We are using the 
+\f1\fs40\fsmilli20333 \cf2 :userID
+\f0\fs40 \cf2  parameter in this route to specify the currently signed-\
+in user. We will utilize the 
+\f1\fs40\fsmilli20333 \cf2 userByID
+\f0\fs40 \cf2  controller method in 
+\f1\fs40\fsmilli20333 \cf2 user.controller
+\f0\fs40 \cf2  to\
+fetch the user details, as we did previously, and append these to the request object\
+that is accessed in the 
+\f1\fs40\fsmilli20333 \cf2 listNewsFeed
+\f0\fs40 \cf2  post controller method. Add the following\
+to 
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2 \cf2 router.param('userId', userCtrl.userByID)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 post.routes.js
+\f0\fs40 \cf2  file will be very similar to the 
+\f1\fs40\fsmilli20333 \cf2 user.routes.js
+\f0\fs40 \cf2  file. To\
+load these new routes in the Express app, we need to mount the post routes in\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 express.js
+\f0\fs40 \cf2 , just like we did for the auth and user routes. The post-related routes\
+are mounted as follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/express.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 app.use('/', postRoutes)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 listNewsFeed
+\f0\fs40 \cf2  controller method in 
+\f1\fs40\fsmilli20333 \cf2 post.controller.js
+\f0\fs40 \cf2  will query the\
+Post collection in the database to get the matching posts. The 
+\f1\fs40\fsmilli20333 \cf2 listNewsFeed
+\f0\fs40 \cf2  con-\
+troller method is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const listNewsFeed = async (req, res) => \{\
+let following = req.profile.following\
+following.push(req.profile._id)\
+try \{\
+let posts = await Post.find(\{postedBy:\{ $in : req.profile.following \}\})\
+.populate('comments.postedBy', '_id name')\
+.populate('postedBy', '_id name')\
+.sort('-created')\
+.exec()\
+res.json(posts)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 In the query to the Post collection, we find all the posts that have 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  user\
+references that match the current user's followings and the current user. The\
+posts that are returned will be sorted by the 
+\f1\fs40\fsmilli20333 \cf2 created
+\f0\fs40 \cf2  timestamp, with the most\
+recent post listed first. Each post will also contain the 
+\f1\fs40\fsmilli20333 \cf2 id
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 name
+\f0\fs40 \cf2  of the user\
+who created the post and of the users who left comments on the post. Next, we\
+will fetch this API in the frontend 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component and render the list de-\
+tails.\
+\cf3 Listing posts in Newsfeed 
+\fs35\fsmilli17780 \cf2 Newsfeed API for posts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Fetching Newsfeed posts in the view
+\fs75 \cf2 Fetching Newsfeed posts in the view\
+
+\fs40 We will use the Newsfeed API in the frontend to fetch the related posts and dis-\
+play these posts in the Newsfeed view. First, we will add a fetch method to make a\
+request to the API, as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 client/post/api-post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const listNewsFeed = async (params, credentials, signal) => \{\
+try \{\
+let response = await fetch('/api/posts/feed/'+ params.userId, \{\
+method: 'GET',\
+signal: signal,\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\}\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This is the fetch method that will load the posts that are rendered in 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2 ,\
+which is added as a child component to the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component. So, this fetch\
+needs to be called in the 
+\f1\fs40\fsmilli20333 \cf2 useEffect
+\f0\fs40 \cf2  hook in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component, as shown\
+in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Newsfeed.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 useEffect(() => \{\
+const abortController = new AbortController()\
+const signal = abortController.signal\
+
+\f3\b listNewsFeed
+\f2\b0 (\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, signal).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+setPosts(data)\
+\}\
+\})\
+return function cleanup()\{\
+abortController.abort()\
+\}\
+\}, [])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This will retrieve the list of posts from the backend and set it to the state of the\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component to initially load the posts that are rendered in the 
+\f1\fs40\fsmilli20333 \cf2 Post\uc0\u8208 \
+List
+\f0\fs40 \cf2  component, as shown in the following screenshot:\
+The implementation of how the individual post details are rendered in this list\
+will be discussed later in this chapter. In the next section, we will render this\
+same 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  for the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component and render the posts that are shared\
+by a specific user.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf3 Newsfeed API for posts 
+\fs35\fsmilli17780 \cf2 Fetching Newsfeed posts in the view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Listing posts by user in Profile
+\fs75 \cf2 Listing posts by user in Profile\
+
+\fs40 The implementation of getting a list of posts created by a specific user and show-\
+ing it in 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  will be similar to what we discussed in the previous section re-\
+garding listing posts in the Newsfeed. First, we will set up an API on the server\
+that queries the Post collection and returns posts from a specific user to the 
+\f1\fs40\fsmilli20333 \cf2 Pro\uc0\u8208 \
+file
+\f0\fs40 \cf2  view.\
+\cf3 Fetching Newsfeed posts in the view 
+\fs35\fsmilli17780 \cf2 Listing posts by user in Profile\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 API for posts by a user
+\fs75 \cf2 API for posts by a user\
+
+\fs40 To retrieve posts that have been shared by a specific user, we need to add a route\
+endpoint that will receive the request for these posts and respond accordingly to\
+the requesting client- side.\
+On the backend, we will define another post-related route that will receive a\
+query to return posts by a specific user, as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/by/:userId')\
+.get(authCtrl.requireSignin, postCtrl.listByUser)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 listByUser
+\f0\fs40 \cf2  controller method in 
+\f1\fs40\fsmilli20333 \cf2 post.controller.js
+\f0\fs40 \cf2  will query the Post\
+collection to find posts that have a matching reference in the 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  field to\
+the user specified in the 
+\f1\fs40\fsmilli20333 \cf2 userId
+\f0\fs40 \cf2  param in the route. The 
+\f1\fs40\fsmilli20333 \cf2 listByUser
+\f0\fs40 \cf2  controller\
+method will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const listByUser = async (req, res) => \{\
+try \{\
+let posts = await Post.find(\{postedBy: req.profile._id\})\
+.populate('comments.postedBy', '_id name')\
+.populate('postedBy', '_id name')\
+.sort('-created')\
+.exec()\
+res.json(posts)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This query will return the list of posts that were created by a specific user. We\
+need to call this API from the frontend, which we will do in the next section.\
+\cf3 Listing posts by user in Profile 
+\fs35\fsmilli17780 \cf2 API for posts by a user\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Fetching user posts in the view
+\fs75 \cf2 Fetching user posts in the view\
+
+\fs40 We will use the list-posts-by-user API in the frontend to fetch the related posts and\
+display these posts in the profile view. To use this API, we will add a fetch method\
+to the frontend, as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/api-post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const listByUser = async (req, res) => \{\
+try \{\
+let posts = await Post.find(\{postedBy: req.profile._id\})\
+.populate('comments.postedBy', '_id name')\
+.populate('postedBy', '_id name')\
+.sort('-created')\
+.exec()\
+res.json(posts)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This 
+\f1\fs40\fsmilli20333 \cf2 fetch
+\f0\fs40 \cf2  method will load the required posts for 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2 , which is added to\
+the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  view. We will update the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component so that it defines a\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 loadPosts
+\f0\fs40 \cf2  method that calls the 
+\f1\fs40\fsmilli20333 \cf2 listByUser
+\f0\fs40 \cf2  fetch method. The 
+\f1\fs40\fsmilli20333 \cf2 loadPosts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs40 \cf2 method will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/user/Profile.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const loadPosts = (user) => \{\
+listByUser(\{\
+userId: user\
+\}, \{\
+t: jwt.token\
+\}).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+setPosts(data)\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 In the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component, the 
+\f1\fs40\fsmilli20333 \cf2 loadPosts
+\f0\fs40 \cf2  method will be called with the user\
+ID of the user whose profile is being loaded, after the user details have been\
+fetched from the server in the 
+\f1\fs40\fsmilli20333 \cf2 useEffect()
+\f0\fs40 \cf2  hook function. The posts that are\
+loaded for the specific user are set to the state and rendered in the 
+\f1\fs40\fsmilli20333 \cf2 PostList\
+
+\f0\fs40 \cf2 component that's added to the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component. The 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component\
+also provides a 
+\f1\fs40\fsmilli20333 \cf2 removePost
+\f0\fs40 \cf2  function, similar to the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component, as a\
+prop to the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component so that the list of posts can be updated if a post\
+is removed. The resulting 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  in the 
+\f1\fs40\fsmilli20333 \cf2 Profile
+\f0\fs40 \cf2  component will render simi-\
+lar to what can be seen in the following screenshot:\
+The features that list posts that have been shared on MERN Social are now com-\
+plete. But before these can be tested out, we need to implement the feature that\
+will allow users to create new posts. We will do this in the next section.\
+\cf3 API for posts by a user 
+\fs35\fsmilli17780 \cf2 Fetching user posts in the view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Creating a new post
+\fs75 \cf2 Creating a new post\
+
+\fs40 The create new post feature will allow a signed-in user to post a message and op-\
+tionally add an image to the post by uploading it from their local files. To imple-\
+ment this feature, in the following sections, we will add a create post API endpoint\
+to the backend that allows uploading an image file, as well as add a 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  com-\
+ponent to the frontend that will utilize this endpoint to let users create new posts.\
+\cf3 Fetching user posts in the view 
+\fs35\fsmilli17780 \cf2 Creating a new post\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Creating the post API
+\fs75 \cf2 Creating the post API\
+
+\fs40 On the server, we will define an API to create the post in the database, starting by\
+declaring a route to accept a POST request at 
+\f1\fs40\fsmilli20333 \cf2 /api/posts/new/:userId
+\f0\fs40 \cf2  in\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/new/:userId')\
+.post(authCtrl.requireSignin, postCtrl.create)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 create
+\f0\fs40 \cf2  method in 
+\f1\fs40\fsmilli20333 \cf2 post.controller.js
+\f0\fs40 \cf2  will use the 
+\f1\fs40\fsmilli20333 \cf2 formidable
+\f0\fs40 \cf2  module\
+to access the fields and the image file, if any, as we did for the user profile photo\
+update. The 
+\f1\fs40\fsmilli20333 \cf2 create
+\f0\fs40 \cf2  controller method will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const create = (req, res, next) => \{\
+let form = new formidable.IncomingForm()\
+form.keepExtensions = true\
+form.parse(req, async (err, fields, files) => \{\
+if (err) \{\
+return res.status(400).json(\{\
+error: "Image could not be uploaded"\
+\})\
+\}\
+let post = new Post(fields)\
+post.postedBy= req.profile\
+if(files.photo)\{\
+post.photo.data = fs.readFileSync(files.photo.path)\
+post.photo.contentType = files.photo.type\
+\}\
+try \{\
+let result = await post.save()\
+res.json(result)\
+\} catch (err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Similar to the profile photo upload, the photo that's uploaded with a new post will\
+be stored in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  document in binary format. We need to add a route to re-\
+trieve and return this photo to the frontend, which we will do next.\
+\cf3 Creating a new post 
+\fs35\fsmilli17780 \cf2 Creating the post API\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Retrieving a post's photo
+\fs75 \cf2 Retrieving a post's photo\
+
+\fs40 To retrieve the uploaded photo, we will also set up a 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  route endpoint that,\
+on request, will return the photo associated with a specific post. The photo URL\
+route will be defined with the other post-related routes, as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/photo/:postId').get(postCtrl.photo)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  controller will return the 
+\f1\fs40\fsmilli20333 \cf2 photo
+\f0\fs40 \cf2  data stored in MongoDB as an image\
+file. This is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const photo = (req, res, next) => \{\
+res.set("Content-Type", req.post.photo.contentType)\
+return res.send(req.post.photo.data)\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Since the photo route uses the 
+\f1\fs40\fsmilli20333 \cf2 :postID
+\f0\fs40 \cf2  parameter, we will set up a 
+\f1\fs40\fsmilli20333 \cf2 postByID\
+
+\f0\fs40 \cf2 controller method to fetch a specific post by its ID before returning it to the photo\
+request. We will add the 
+\f1\fs40\fsmilli20333 \cf2 param
+\f0\fs40 \cf2  call to 
+\f1\fs40\fsmilli20333 \cf2 post.routes.js
+\f0\fs40 \cf2 , as shown in the follow-\
+ing code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.param('postId', postCtrl.postByID)\
+
+\f1\fs40\fsmilli20333 postByID
+\f0\fs40 \cf2  will be similar to the 
+\f1\fs40\fsmilli20333 \cf2 userByID
+\f0\fs40 \cf2  method, and it will attach the post re-\
+trieved from the database to the request object so that it can be accessed by the\
+
+\f1\fs40\fsmilli20333 \cf2 next
+\f0\fs40 \cf2  method. The 
+\f1\fs40\fsmilli20333 \cf2 postByID
+\f0\fs40 \cf2  method is defined as follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const postByID = async (req, res, next, id) => \{\
+try\{\
+let post = await Post.findById(id)\
+.populate('postedBy', '_id name')\
+.exec()\
+if (!post)\
+return res.status('400').json(\{\
+error: "Post not found"\
+\})\
+req.post = post\
+next()\
+\}catch(err)\{\
+return res.status('400').json(\{\
+error: "Could not retrieve use post"\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The attached post data in this implementation will also contain the ID and name\
+of the 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  user reference since we are invoking 
+\f1\fs40\fsmilli20333 \cf2 populate()
+\f0\fs40 \cf2 . In the next\
+section, we will add a fetch method to access this API endpoint in the frontend.\
+\cf3 Creating the post API 
+\fs35\fsmilli17780 \cf2 Retrieving a post's photo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Fetching the create post API in the view
+\fs75 \cf2 Fetching the create post API in the view\
+
+\fs40 We will update 
+\f1\fs40\fsmilli20333 \cf2 api-post.js
+\f0\fs40 \cf2  by adding a 
+\f1\fs40\fsmilli20333 \cf2 create
+\f0\fs40 \cf2  method to make a 
+\f1\fs40\fsmilli20333 \cf2 fetch
+\f0\fs40 \cf2  call to\
+the create API. The 
+\f1\fs40\fsmilli20333 \cf2 create
+\f0\fs40 \cf2  fetch method will look as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/api-post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const create = async (params, credentials, post) => \{\
+try \{\
+let response = await fetch('/api/posts/new/'+ params.userId, \{\
+method: 'POST',\
+headers: \{\
+'Accept': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: post\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This method, like the user 
+\f1\fs40\fsmilli20333 \cf2 edit
+\f0\fs40 \cf2  fetch method, will send a multipart form submis-\
+sion using a 
+\f1\fs40\fsmilli20333 \cf2 FormData
+\f0\fs40 \cf2  object that will contain the text field and the image file.\
+Finally, we are ready to integrate this create new post feature in the backend with\
+a frontend component that will allow users to compose a post and submit it to the\
+backend.\
+\cf3 Retrieving a post's photo 
+\fs35\fsmilli17780 \cf2 Fetching the create post API in the view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Making the NewPost component
+\fs75 \cf2 Making the NewPost component\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  component that we added in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  component will allow\
+users to compose a new post containing a text message and, optionally, an image,\
+as shown in the following screenshot:\
+The 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  component will be a standard form with a Material-UI 
+\f1\fs40\fsmilli20333 \cf2 TextField\
+
+\f0\fs40 \cf2 and a file upload button, as implemented in 
+\f1\fs40\fsmilli20333 \cf2 EditProfile
+\f0\fs40 \cf2 , that takes the values\
+and sets them in a 
+\f1\fs40\fsmilli20333 \cf2 FormData
+\f0\fs40 \cf2  object to be passed in the call to the 
+\f1\fs40\fsmilli20333 \cf2 create
+\f0\fs40 \cf2  fetch\
+method on post submission. Post submission will invoke the following 
+\f1\fs40\fsmilli20333 \cf2 clickPost\
+
+\f0\fs40 \cf2 method.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/NewPost.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const clickPost = () => \{\
+let postData = new FormData()\
+postData.append('text', values.text)\
+postData.append('photo', values.photo)\
+create(\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, postData).then((data) => \{\
+if (data.error) \{\
+setValues(\{...values, error: data.error\})\
+\} else \{\
+setValues(\{...values, text:'', photo: ''\})\
+props.addUpdate(data)\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 NewPost
+\f0\fs40 \cf2  component is added as a child component in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  and giv-\
+en the 
+\f1\fs40\fsmilli20333 \cf2 addUpdate
+\f0\fs40 \cf2  method as a prop, as we discussed earlier. On successful post\
+creation, the form view is emptied and 
+\f1\fs40\fsmilli20333 \cf2 addUpdate
+\f0\fs40 \cf2  is executed so that the post list\
+in the 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  is updated with the new post. In the next section, we will add the\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component in order to display each post and its details.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf3 Fetching the create post API in the view 
+\fs35\fsmilli17780 \cf2 Making the NewPost component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The Post component
+\fs75 \cf2 The Post component\
+
+\fs40 Post details in each post will be rendered in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component, which will re-\
+ceive the post data as props from the 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component, as well as the 
+\f1\fs40\fsmilli20333 \cf2 onRe\uc0\u8208 \
+move
+\f0\fs40 \cf2  prop, which needs to be applied if a post is deleted. In the following sections,\
+we will look at the different parts of the Post interface and how to implement\
+each.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 The Post component\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Making the NewPost component Layout
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Layout\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component layout will have a header showing details of the poster, the\
+content of the post, an actions bar with a count of likes and comments, and a com-\
+ments section, as shown in the following screenshot:\
+Next, we will look into the implementation details of the header, content, actions,\
+and comments sections of this Post component.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Layout\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The Post component Header
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Header\
+
+\fs40 The header will contain information such as the name, avatar, and link to the pro-\
+file of the user who posted, as well as the date the post was created. The code to\
+display these details in the header section will be as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <CardHeader\
+avatar=\{\
+<Avatar src=\{'/api/users/photo/'+props.post.postedBy._id\}/>\
+\}\
+action=\{ props.post.postedBy._id === auth.isAuthenticated().user._id &&\
+<IconButton onClick=\{deletePost\}>\
+<DeleteIcon />\
+</IconButton>\
+\}\
+title=\{<Link to=\{"/user/" + props.post.postedBy._id\}>\{props.post.postedBy.name\}</Link>\}\
+subheader=\{(new Date(props.post.created)).toDateString()\}\
+className=\{classes.cardHeader\}\
+/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The header will also conditionally show a 
+\f1\fs40\fsmilli20333 \cf2 delete
+\f0\fs40 \cf2  button if the signed-in user is\
+viewing their own post. This header section will be above the main content sec-\
+tion, which is discussed next.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Header\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Layout Content
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Content\
+
+\fs40 The content section will show the text of the post and the image if the post con-\
+tains a photo. The code to display these details in the content section will be as fol-\
+lows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <CardContent className=\{classes.cardContent\}>\
+<Typography component="p" className=\{classes.text\}>\
+\{props.post.text\}\
+</Typography>\
+\{props.post.photo &&\
+(<div className=\{classes.photo\}>\
+<img className=\{classes.media\}\
+src=\{'/api/posts/photo/'+ props.post._id\}/>\
+</div>)\
+\}\
+</CardContent>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The image is loaded by adding the photo API to the 
+\f1\fs40\fsmilli20333 \cf2 src
+\f0\fs40 \cf2  attribute in the 
+\f1\fs40\fsmilli20333 \cf2 img
+\f0\fs40 \cf2  tag if\
+the given post contains a photo. Followed by this content section is the actions sec-\
+tion.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Content\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Header Actions
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\f4\fs75\fsmilli37546 \cf5 Actions\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs38\fsmilli19200 \cf5 The actions section will contain an interactive 
+\f2\fs31\fsmilli15600 "like"
+\f4\fs38\fsmilli19200  option with a display\
+of the total number of likes on the post and a comment icon with the total\
+number of comments on the post. The code to display these actions will\
+be as follows.\
+
+\f2\fs31\fsmilli15600 mern-social/client/post/Post.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 <CardActions>\
+\{ values.like\
+? <IconButton onClick=\{clickLike\} className=\{classes.button\
+aria-label="Like" color="secondary">\
+<FavoriteIcon />\
+</IconButton>\
+: <IconButton onClick=\{clickLike\} className=\{classes.button\
+aria-label="Unlike" color="secondary">\
+<FavoriteBorderIcon />\
+</IconButton> \} <span>\{values.likes\}</span>\
+<IconButton className=\{classes.button\}\
+aria-label="Comment" color="secondary">\
+<CommentIcon/>\
+</IconButton> <span>\{values.comments.length\}</span>\
+</CardActions>\
+
+\f4\fs38\fsmilli19200 We will discuss the implementation of the "like" button later in this\
+chapter. The details of the likes for each post are retrieved within the 
+\f2\fs31\fsmilli15600 post\
+
+\f4\fs38\fsmilli19200 object that's received in the props.\
+In the Post component, the final section will display the comments that\
+have been left on the given post. We'll discuss this next.
+\f0\fs75 \cf2 Comments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf2 The comments section will contain all the comment-related elements in the 
+\f1\fs40\fsmilli20333 \cf2 Com\uc0\u8208 \
+ments
+\f0\fs40 \cf2  component and will get 
+\f1\fs40\fsmilli20333 \cf2 props
+\f0\fs40 \cf2  such as the 
+\f1\fs40\fsmilli20333 \cf2 postId
+\f0\fs40 \cf2  and the 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2  data,\
+along with a 
+\f1\fs40\fsmilli20333 \cf2 state
+\f0\fs40 \cf2  updating method that can be called when a comment is added\
+or deleted in the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component.\
+The comments section will be rendered in the view with the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <Comments postId=\{props.post._id\}\
+comments=\{values.comments\}\
+updateComments=\{updateComments\}/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The implementation of this 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component will be detailed later in this\
+chapter. These four sections make up the individual post view that we implement-\
+ed in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component, which is rendered in 
+\f1\fs40\fsmilli20333 \cf2 PostList
+\f0\fs40 \cf2  component. Each\
+post's header also shows a 
+\f1\fs40\fsmilli20333 \cf2 delete
+\f0\fs40 \cf2  button to the creator of the post. We will im-\
+plement this remove post functionality next.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Comments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Actions Deleting a post
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Deleting a post\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 delete
+\f0\fs40 \cf2  button is only visible if the signed-in user and 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  user are the\
+same for the specific post being rendered. For the post to be deleted from the\
+database, we will have to set up a delete post API in the backend which will also\
+have a fetch method in the frontend that will be applied when 
+\f1\fs40\fsmilli20333 \cf2 delete
+\f0\fs40 \cf2  is clicked.\
+The route for the delete post API endpoint will be as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/:postId')\
+.delete(authCtrl.requireSignin,\
+postCtrl.isPoster,\
+postCtrl.remove)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The delete route will check for authorization before calling 
+\f1\fs40\fsmilli20333 \cf2 remove
+\f0\fs40 \cf2  on the post by\
+ensuring the authenticated user and 
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  user are the same users. The 
+\f1\fs40\fsmilli20333 \cf2 is\uc0\u8208 \
+Poster
+\f0\fs40 \cf2  method, which is implemented in the following code, checks whether the\
+signed-in user is the original creator of the post before executing the 
+\f1\fs40\fsmilli20333 \cf2 next\
+
+\f0\fs40 \cf2 method.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const isPoster = (req, res, next) => \{\
+let isPoster = req.post && req.auth &&\
+req.post.postedBy._id == req.auth._id\
+if(!isPoster)\{\
+return res.status('403').json(\{\
+error: "User is not authorized"\
+\})\
+\}\
+next()\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The rest of the implementation for the delete API with a 
+\f1\fs40\fsmilli20333 \cf2 remove
+\f0\fs40 \cf2  controller\
+method and fetch method for the frontend are the same as for the other API im-\
+plementations. The important difference here, in the delete post feature, is the\
+call to the 
+\f1\fs40\fsmilli20333 \cf2 onRemove
+\f0\fs40 \cf2  update method in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component when delete suc-\
+ceeds. The 
+\f1\fs40\fsmilli20333 \cf2 onRemove
+\f0\fs40 \cf2  method is sent as a prop from either 
+\f1\fs40\fsmilli20333 \cf2 Newsfeed
+\f0\fs40 \cf2  or 
+\f1\fs40\fsmilli20333 \cf2 Profile\
+
+\f0\fs40 \cf2 to update the list of posts in the state when the delete is successful.\
+The following 
+\f1\fs40\fsmilli20333 \cf2 deletePost
+\f0\fs40 \cf2  method, which is defined in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component, is\
+called when the 
+\f1\fs40\fsmilli20333 \cf2 delete
+\f0\fs40 \cf2  button is clicked on a post.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const deletePost = () => \{\
+remove(\{\
+postId: props.post._id\
+\}, \{\
+t: jwt.token\
+\}).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+
+\f3\b props.onRemove(props.post)\
+
+\f2\b0 \}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This method makes a fetch call to the delete post API and on success, updates the\
+list of posts in the state by executing the 
+\f1\fs40\fsmilli20333 \cf2 onRemove
+\f0\fs40 \cf2  method, which is received as a\
+prop from the parent component.\
+This wraps up the implementation of the Post CRUD features in the backend and\
+the frontend. However, we have not completed the features that will allow MERN\
+Social users to interact with these posts. In the next section, we will add the ability\
+to like posts and comment on posts.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Deleting a post\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Comments Interacting with Posts
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Interacting with Posts\
+
+\fs40 A core feature of any social media platform is the ability for users to interact with\
+shared content. For the posts that are created in the MERN Social application, we\
+will add the options to like and leave comments on individual posts.\
+To complete the implementation of this feature, first, we will have to modify the\
+backend so that we can add API endpoints that update an existing post with de-\
+tails of who liked the post and details of comments left on the post.\
+Then, in the frontend, we will have to modify the UI so that users can like and\
+leave a comment on a post.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Interacting with Posts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Deleting a post Likes
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Likes\
+
+\fs40 The like option in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component's action bar section will allow the user to\
+like or unlike a post, and also show the total number of likes for the post. To\
+record a "like", we will have to set up like and unlike APIs that can be called in the\
+view when the user interacts with the action bar that's rendered in each post.\
+\cf3 Interacting with Posts 
+\fs35\fsmilli17780 \cf2 Likes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The Like API
+\f4\fs75\fsmilli37546 \cf5 The Like API\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs38\fsmilli19200 \cf5 The like API will be a PUT request that will update the 
+\f2\fs31\fsmilli15600 likes
+\f4\fs38\fsmilli19200  array in the\
+
+\f2\fs31\fsmilli15600 Post
+\f4\fs38\fsmilli19200  document. The request will be received at the 
+\f2\fs31\fsmilli15600 api/posts/like
+\f4\fs38\fsmilli19200  route,\
+which is defined as follows.\
+
+\f2\fs31\fsmilli15600 mern-social/server/routes/post.routes.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 router.route('/api/posts/like')\
+.put(authCtrl.requireSignin, postCtrl.like)\
+
+\f4\fs38\fsmilli19200 In the 
+\f2\fs31\fsmilli15600 like
+\f4\fs38\fsmilli19200  controller method, the post ID that's received in the request\
+body will be used to find the specific 
+\f2\fs31\fsmilli15600 Post
+\f4\fs38\fsmilli19200  document and update it by\
+pushing the current user's ID to the 
+\f2\fs31\fsmilli15600 likes
+\f4\fs38\fsmilli19200  array, as shown in the following\
+code.\
+
+\f2\fs31\fsmilli15600 mern-social/server/controllers/post.controller.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 const like = async (req, res) => \{\
+try \{\
+let result = await Post.findByIdAndUpdate(req.body.postId,\
+\{
+\f5\b $push
+\f1\b0 : \{likes: req.body.userId\}\},\
+\{new: true\})\
+res.json(result)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+
+\f4\fs38\fsmilli19200 To use this API, a fetch method called 
+\f2\fs31\fsmilli15600 like
+\f4\fs38\fsmilli19200  will be added to 
+\f2\fs31\fsmilli15600 api-post.js
+\f4\fs38\fsmilli19200 ,\
+which will be used when the user clicks the 
+\f2\fs31\fsmilli15600 like
+\f4\fs38\fsmilli19200  button. The 
+\f2\fs31\fsmilli15600 like
+\f4\fs38\fsmilli19200  fetch is\
+defined as follows.
+\f2\fs31\fsmilli15600 mern-social/client/post/api-post.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 const like = async (params, credentials, postId) => \{\
+try \{\
+let response = await fetch('/api/posts/like/', \{\
+method: 'PUT',\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: JSON.stringify(\{userId:params.userId, postId: postId\})\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+
+\f4\fs38\fsmilli19200 Similarly, in the next section, we will also implement an unlike API endpoint\
+so that a user can unlike a previously liked post.
+\fs75\fsmilli37546 The Unlike API\
+
+\fs38\fsmilli19200 The 
+\f2\fs31\fsmilli15600 unlike
+\f4\fs38\fsmilli19200  API will be implemented similar to the like API, with its own\
+route. This will be declared as follows.\
+
+\f2\fs31\fsmilli15600 mern-social/server/routes/post.routes.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 router.route('/api/posts/unlike')\
+.put(authCtrl.requireSignin, postCtrl.unlike)\
+
+\f4\fs38\fsmilli19200 The 
+\f2\fs31\fsmilli15600 unlike
+\f4\fs38\fsmilli19200  method in the controller will find the post by its ID and update\
+the 
+\f2\fs31\fsmilli15600 likes
+\f4\fs38\fsmilli19200  array by removing the current user's ID using 
+\f2\fs31\fsmilli15600 $pull
+\f4\fs38\fsmilli19200  instead of\
+
+\f2\fs31\fsmilli15600 $push
+\f4\fs38\fsmilli19200 . The 
+\f2\fs31\fsmilli15600 unlike
+\f4\fs38\fsmilli19200  controller method will look as follows.\
+
+\f2\fs31\fsmilli15600 mern-social/server/controllers/post.controller.js
+\f4\fs38\fsmilli19200 :\
+
+\f1\fs33\fsmilli16704 const unlike = async (req, res) => \{\
+try \{\
+let result = await Post.findByIdAndUpdate(req.body.postId,\
+\{
+\f5\b $pull
+\f1\b0 : \{likes: req.body.userId\}\},\
+\{new: true\})\
+res.json(result)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+
+\f4\fs38\fsmilli19200 The unlike API will also have a corresponding fetch method, similar to the\
+
+\f2\fs31\fsmilli15600 like
+\f4\fs38\fsmilli19200  method in 
+\f2\fs31\fsmilli15600 api-post.js
+\f4\fs38\fsmilli19200 .\
+These APIs will be called when the user interacts with the like button in\
+the view. But whether the like button should allow a like or an unlike action\
+needs to be determined first. We will take a look at this in the next section.
+\f0\fs75 \cf2 Checking if a post has been liked and\
+counting likes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf2 When the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component is rendered, we need to check if the currently signed-\
+in user has liked the post or not so that the appropriate 
+\f1\fs40\fsmilli20333 \cf2 like
+\f0\fs40 \cf2  option can be\
+shown. The following 
+\f1\fs40\fsmilli20333 \cf2 checkLike
+\f0\fs40 \cf2  method checks whether the currently signed-in\
+user is referenced in the post's 
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  array or not.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const checkLike = (likes) => \{\
+let match = likes.indexOf(jwt.user._id) !== -1\
+return match\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This 
+\f1\fs40\fsmilli20333 \cf2 checkLike
+\f0\fs40 \cf2  function can be called while setting the initial value of the 
+\f1\fs40\fsmilli20333 \cf2 like\
+
+\f0\fs40 \cf2 state variable, which keeps track of whether the current user liked the given post\
+or not. The following screenshot shows how the like button renders when a post\
+has not been liked versus when it has been liked by the current user:\
+The 
+\f1\fs40\fsmilli20333 \cf2 like
+\f0\fs40 \cf2  value that's set in the state using the 
+\f1\fs40\fsmilli20333 \cf2 checkLike
+\f0\fs40 \cf2  method can be used to\
+render a heart outline button or a full heart button. A heart outline button will\
+render if the user has not liked the post; clicking it will make a call to the 
+\f1\fs40\fsmilli20333 \cf2 like\
+
+\f0\fs40 \cf2 API, show the full heart button, and increment the 
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  count. The full heart\
+button will indicate the current user has already liked this post; clicking this will\
+call the 
+\f1\fs40\fsmilli20333 \cf2 unlike
+\f0\fs40 \cf2  API, render the heart outline button, and decrement the 
+\f1\fs40\fsmilli20333 \cf2 likes\
+
+\f0\fs40 \cf2 count.\
+The 
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  count is also set initially when the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component mounts and props\
+are received by setting the 
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  value to the state with 
+\f1\fs40\fsmilli20333 \cf2 props.post.\uc0\u8208 \
+likes.length
+\f0\fs40 \cf2 , as shown in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const [values, setValues] = useState(\{\
+like: checkLike(props.post.likes),\
+likes: props.post.likes.length,\
+comments: props.post.comments\
+\})\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The likes-related values are updated again when a "like" or "unlike" action takes\
+place, and the updated post data is returned from the API call. Next, we will look\
+at how to handle these clicks on the like button.\
+\cf3 The Unlike API 
+\fs35\fsmilli17780 \cf2 Checking if a post has been liked and counting likes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Handling like clicks
+\fs75 \cf2 Handling like clicks\
+
+\fs40 To handle clicks on the 
+\f1\fs40\fsmilli20333 \cf2 like
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 unlike
+\f0\fs40 \cf2  buttons, we will set up a 
+\f1\fs40\fsmilli20333 \cf2 clickLike\
+
+\f0\fs40 \cf2 method that will call the appropriate fetch method based on whether it is a "like"\
+or "unlike" action, and then update the state of the 
+\f1\fs40\fsmilli20333 \cf2 like
+\f0\fs40 \cf2  and 
+\f1\fs40\fsmilli20333 \cf2 likes
+\f0\fs40 \cf2  count for the\
+post. This 
+\f1\fs40\fsmilli20333 \cf2 clickLike
+\f0\fs40 \cf2  method will be defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const clickLike = () => \{\
+let callApi = values.like ? unlike : like\
+const jwt = auth.isAuthenticated()\
+callApi(\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, props.post._id).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+setValues(\{...values, 
+\f3\b like: !values.like
+\f2\b0 ,\
+
+\f3\b likes: data.likes.length
+\f2\b0 \})\
+\}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 Which of the like or unlike API endpoints will be called on a click depends on the\
+value of the 
+\f1\fs40\fsmilli20333 \cf2 like
+\f0\fs40 \cf2  variable in the state. Once the chosen API endpoint is called suc-\
+cessfully, the values are updated in the state so that they can be reflected in the\
+view.\
+This completes the likes feature implementation, complete with backend APIs in-\
+tegrated with the frontend to enable liking and unliking a given post. Next, we\
+will add the comments feature to complete the social media application features\
+we had set out for MERN Social.\
+\cf3 Checking if a post has been liked and countin\'85 
+\fs35\fsmilli17780 \cf2 Handling like clicks\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Comments
+\fs75 \cf2 Comments\
+
+\fs40 The comments section in each post will allow signed-in users to add comments,\
+see the list of comments, and delete their own comments. Any changes to the com-\
+ment list, such as a new addition or removal, will update the comments, as well as\
+the comment count in the action bar section of the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component. The result-\
+ing comments section can be seen in the following screenshot:\
+To implement a functional comments section, we will update the backend with\
+the corresponding comment and uncomment API endpoints, and also create this\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component so that it integrates with the backend update.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf3 Handling like clicks 
+\fs35\fsmilli17780 \cf2 Comments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Adding a comment
+\fs75 \cf2 Adding a comment\
+
+\fs40 When a user adds a comment, the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  document will be updated in the database\
+with the new comment. First, we need to implement an API that receives the com-\
+ment details from the client- side and updates the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  document. Then, we need\
+to create the UI in the frontend, which allows us to compose a new comment and\
+submit it to the backend API.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Adding a comment\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Comments The Comment API
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 The Comment API\
+
+\fs40 To implement the add comment API, we will set up a 
+\f1\fs40\fsmilli20333 \cf2 PUT
+\f0\fs40 \cf2  route as follows to up-\
+date the post.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/comment')\
+.put(authCtrl.requireSignin, postCtrl.comment)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 comment
+\f0\fs40 \cf2  controller method, which is defined in the following code, will find\
+the relevant post to be updated by its ID and push the comment object that's re-\
+ceived in the request body to the 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2  array of the post.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const comment = async (req, res) => \{\
+let comment = req.body.comment\
+comment.postedBy = req.body.userId\
+try \{\
+let result = await Post.findByIdAndUpdate(req.body.postId,\
+\{
+\f3\b $push
+\f2\b0 : \{comments: comment\}\},\
+\{new: true\})\
+.populate('comments.postedBy', '_id name')\
+.populate('postedBy', '_id name')\
+.exec()\
+res.json(result)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 In the response, the updated post object will be sent back with details of the\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 postedBy
+\f0\fs40 \cf2  users populated in the post and in the comments.\
+To use this API in the view, we will set up a fetch method in 
+\f1\fs40\fsmilli20333 \cf2 api-post.js
+\f0\fs40 \cf2 , which\
+takes the current user's ID, the post ID, and the 
+\f1\fs40\fsmilli20333 \cf2 comment
+\f0\fs40 \cf2  object from the view, and\
+sends it with the add comment request. The 
+\f1\fs40\fsmilli20333 \cf2 comment
+\f0\fs40 \cf2  fetch method will look as\
+follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/api-post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const comment = async (params, credentials, postId, comment) => \{\
+try \{\
+let response = await fetch('/api/posts/comment/', \{\
+method: 'PUT',\
+headers: \{\
+'Accept': 'application/json',\
+'Content-Type': 'application/json',\
+'Authorization': 'Bearer ' + credentials.t\
+\},\
+body: JSON.stringify(\{userId:params.userId, postId: postId,\
+comment: comment\})\
+\})\
+return await response.json()\
+\} catch(err) \{\
+console.log(err)\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 We can use this fetch method in the UI when the user submits a new comment, as\
+discussed in the next section.\
+\cf3 Adding a comment 
+\fs35\fsmilli17780 \cf2 The Comment API\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Writing something in the view
+\fs75 \cf2 Writing something in the view\
+
+\fs40 The add comment section in the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component will allow the signed-in\
+user to type in the comment text:\
+This will contain an avatar showing the user's photo and a text field, which will\
+add the comment when the user presses the Enter key. This add comment section\
+will be rendered in the view with the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Comments.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <CardHeader\
+avatar=\{\
+<Avatar className=\{classes.smallAvatar\}\
+src= \{'/api/users/photo/'\
++auth.isAuthenticated().user._id\}/>\
+\}\
+title=\{ <TextField\
+onKeyDown=\{addComment\}\
+multiline\
+value=\{text\}\
+onChange=\{handleChange\}\
+placeholder="Write something ..."\
+className=\{classes.commentField\}\
+margin="normal"\
+/>\
+\}\
+className=\{classes.cardHeader\}\
+/>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The text will be stored in the state when the value changes, and on the 
+\f1\fs40\fsmilli20333 \cf2 onKey\uc0\u8208 \
+Down
+\f0\fs40 \cf2  event, the 
+\f1\fs40\fsmilli20333 \cf2 addComment
+\f0\fs40 \cf2  method will call the 
+\f1\fs40\fsmilli20333 \cf2 comment
+\f0\fs40 \cf2  fetch method if the En-\
+ter key is pressed. The Enter key corresponds to 
+\f1\fs40\fsmilli20333 \cf2 keyCode
+\f0\fs40 \cf2  13, as shown in the fol-\
+lowing code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Comments.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const addComment = (event) => \{\
+if(event.keyCode == 13 && event.target.value)\{\
+event.preventDefault()\
+
+\f3\b comment
+\f2\b0 (\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, props.postId, \{text: text\}).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+setText('')\
+props.updateComments(data.comments)\
+\}\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component receives the 
+\f1\fs40\fsmilli20333 \cf2 updateComments
+\f0\fs40 \cf2  method (as discussed in\
+the previous section) as a prop from the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component. This will be executed\
+when the new comment is added in order to update the comments list and the\
+comment count in the Post view. The part of 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  that lists all the comments\
+for the post will be added in the next section.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Writing something in the view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 The Comment API Listing comments
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 Listing comments\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component receives the list of comments for the specific post as\
+props from the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component. Then, it iterates over the individual comments\
+to render the details of the commenter and the comment content. This view is im-\
+plemented with the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Comments.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 \{ props.comments.map((item, i) => \{\
+return <CardHeader\
+avatar=\{\
+<Avatar className=\{classes.smallAvatar\}\
+src=\{'/api/users/photo/'+item.postedBy._id\}/>\
+\}\
+title=\{
+\f3\b commentBody(item)
+\f2\b0 \}\
+className=\{classes.cardHeader\}\
+key=\{i\}/>\
+\})\
+\}\
+
+\f1\fs40\fsmilli20333 commentBody
+\f0\fs40 \cf2  renders the content, including the name of the commenter linked\
+to their profile, the comment text, and the date of comment creation. 
+\f1\fs40\fsmilli20333 \cf2 comment\uc0\u8208 \
+Body
+\f0\fs40 \cf2  is defined as follows.\
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Comments.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const commentBody = item => \{\
+return (\
+<p className=\{classes.commentText\}>\
+<Link to=\{"/user/" + item.postedBy._id\}>\
+\{item.postedBy.name\} </Link><br/>\
+\{item.text\}\
+<span className=\{classes.commentDate\}>\
+\{ (new Date(item.created)).toDateString()\} |\
+\{ auth.isAuthenticated().user._id === item.postedBy._id &&\
+<Icon onClick=\{deleteComment(item)\}\
+className=\{classes.commentDelete\}>delete</Icon> \}\
+</span>\
+</p>\
+)\
+\}\
+
+\f1\fs40\fsmilli20333 commentBody
+\f0\fs40 \cf2  will also render a delete option for the comment if the 
+\f1\fs40\fsmilli20333 \cf2 postedBy\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs40 \cf2 reference of the comment matches the currently signed-in user. We will look at\
+the implementation of this comment deletion option in the next section.\
+\cf3 Writing something in the view 
+\fs35\fsmilli17780 \cf2 Listing comments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Deleting a comment
+\fs75 \cf2 Deleting a comment\
+
+\fs40 Clicking the delete button in a comment will update the post in the database by\
+removing the comment from the 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2  array in the corresponding post. The\
+delete button can be seen underneath the comment shown in the following\
+screenshot:\
+To implement this delete comment feature, we need to add an uncomment API to\
+the backend and then use it in the frontend.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs35\fsmilli17780 \cf2 Deleting a comment\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Listing comments The Uncomment API
+\fs35\fsmilli17780 \cf4 Full-Stack React Projects - Second Edition
+\fs75 \cf2 The Uncomment API\
+
+\fs40 We will implement an 
+\f1\fs40\fsmilli20333 \cf2 uncomment
+\f0\fs40 \cf2  API at the following PUT route.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/routes/post.routes.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 router.route('/api/posts/uncomment')\
+.put(authCtrl.requireSignin, postCtrl.uncomment)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The 
+\f1\fs40\fsmilli20333 \cf2 uncomment
+\f0\fs40 \cf2  controller method will find the relevant post by ID and pull the\
+comment with the deleted comment's ID from the 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2  array in the post, as\
+implemented in the following code.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/server/controllers/post.controller.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const uncomment = async (req, res) => \{\
+let comment = req.body.comment\
+try\{\
+let result = await Post.findByIdAndUpdate(req.body.postId,\
+\{
+\f3\b $pull
+\f2\b0 : \{comments: \{_id: comment._id\}\}\},\
+\{new: true\})\
+.populate('comments.postedBy', '_id name')\
+.populate('postedBy', '_id name')\
+.exec()\
+res.json(result)\
+\} catch(err) \{\
+return res.status(400).json(\{\
+error: errorHandler.getErrorMessage(err)\
+\})\
+\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 The updated post will be returned in the response, similar to the comment API.\
+To use this API in the view, we will also set up a fetch method in 
+\f1\fs40\fsmilli20333 \cf2 api-post.js
+\f0\fs40 \cf2 ,\
+similar to the 
+\f1\fs40\fsmilli20333 \cf2 addComment
+\f0\fs40 \cf2  fetch method, that takes the current user's ID, the post\
+ID, and the deleted 
+\f1\fs40\fsmilli20333 \cf2 comment
+\f0\fs40 \cf2  object to send with the 
+\f1\fs40\fsmilli20333 \cf2 uncomment
+\f0\fs40 \cf2  request. Next, we\
+will learn how to use this fetch method when the delete button is clicked.\
+\cf3 Deleting a comment 
+\fs35\fsmilli17780 \cf2 The Uncomment API\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Removing a comment from the view
+\fs75 \cf2 Removing a comment from the view\
+
+\fs40 When a comment's delete button is clicked by the commenter, the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  com-\
+ponent will call the 
+\f1\fs40\fsmilli20333 \cf2 deleteComment
+\f0\fs40 \cf2  method to fetch the 
+\f1\fs40\fsmilli20333 \cf2 uncomment
+\f0\fs40 \cf2  API and up-\
+date the comments, along with the comment count, when the comment is success-\
+fully removed from the server. The 
+\f1\fs40\fsmilli20333 \cf2 deleteComment
+\f0\fs40 \cf2  method is defined as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Comments.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const deleteComment = comment => event => \{\
+
+\f3\b uncomment
+\f2\b0 (\{\
+userId: jwt.user._id\
+\}, \{\
+t: jwt.token\
+\}, props.postId, comment).then((data) => \{\
+if (data.error) \{\
+console.log(data.error)\
+\} else \{\
+
+\f3\b props.updateComments(data.comments)\
+
+\f2\b0 \}\
+\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 On successfully removing a comment from the backend, the 
+\f1\fs40\fsmilli20333 \cf2 updateComments\
+
+\f0\fs40 \cf2 method that's sent in the props from the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component will be invoked. This\
+will update the state of the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component to update the view. This will be dis-\
+cussed in the next section.\
+\cf3 The Uncomment API 
+\fs35\fsmilli17780 \cf2 Removing a comment from the view\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Comment count update
+\fs75 \cf2 Comment count update\
+
+\fs40 The 
+\f1\fs40\fsmilli20333 \cf2 updateComments
+\f0\fs40 \cf2  method, which will allow the 
+\f1\fs40\fsmilli20333 \cf2 comments
+\f0\fs40 \cf2  and comment\
+count to be updated when a comment is added or deleted, is defined in the 
+\f1\fs40\fsmilli20333 \cf2 Post\
+
+\f0\fs40 \cf2 component and passed as a prop to the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component. The 
+\f1\fs40\fsmilli20333 \cf2 updateCom\uc0\u8208 \
+ments
+\f0\fs40 \cf2  method will look as follows:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 const updateComments = (comments) => \{\
+setValues(\{...values, comments: comments\})\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This method takes the updated list of comments as a parameter and updates the\
+state that holds the list of comments rendered in the view. The initial state of com-\
+ments in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component is set when the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component mounts and re-\
+ceives the post data as props. The comments that are set here are sent as props to\
+the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component and used to render the comment count next to the likes\
+action in the action bar of the Post layout, as follows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs40\fsmilli20333 \cf2 mern-social/client/post/Post.js
+\f0\fs40 \cf2 :\
+
+\f2 \cf2 <IconButton aria-label="Comment" color="secondary">\
+<CommentIcon/>\
+</IconButton> <span>\{
+\f3\b values.comments.length
+\f2\b0 \}</span>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf2 This relationship between the comment count in the 
+\f1\fs40\fsmilli20333 \cf2 Post
+\f0\fs40 \cf2  component and the\
+comments that are rendered and updated in the 
+\f1\fs40\fsmilli20333 \cf2 Comments
+\f0\fs40 \cf2  component gives a\
+simple demonstration of how changing data is shared among nested components\
+in React to create dynamic and interactive user interfaces.\
+The MERN Social application now contains the set of features we defined earlier\
+for the application. Users are able to update their profiles with a photo and de-\
+scription, follow each other on the application, and create posts with photos and\
+text, as well as like and comment on posts. The implementations shown here can\
+be tuned and extended further to add more features in order to utilize the re-\
+vealed mechanisms of working with the MERN stack.\
+\cf3 Removing a comment from the view 
+\fs35\fsmilli17780 \cf2 Comment count update\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Summary
+\fs75 \cf2 Summary\
+
+\fs40 The MERN Social application we developed in this chapter demonstrated how the\
+MERN stack technologies can be used together to build out a fully-featured and\
+functioning web application with social media features.\
+We began by updating the user feature in the skeleton application to allow any-\
+one with an account on MERN Social to add a description about themselves, as\
+well as upload a profile picture from their local files. In the implementation of up-\
+loading a profile picture, we explored how to upload multipart form data from\
+the client, then receive it on the server to store the file data directly in the Mon-\
+goDB database, and then be able to retrieve it back for viewing.\
+Next, we updated the user feature further to allow users to follow each other on\
+the MERN Social platform. In the user model, we added the capability to maintain\
+arrays of user references to represent lists of followers and followings for each\
+user. Extending this capability, we incorporated follow and unfollow options in\
+the view and displayed lists of followers, followings, and even lists of users not\
+followed yet.\
+Then, we added the ability to allow users to post content and interact over the\
+content by liking or commenting on the post. On the backend, we set up the Post\
+model and corresponding APIs, which are capable of storing the post content that\
+may or may not include an image, as well as maintaining records of likes and\
+comments that are incurred on a post by any user.\
+Finally, while implementing the views for the posting, liking, and commenting\
+features, we explored how to use component composition and share changing\
+state values across the components to create complex and interactive views.\
+By completing this MERN Social application implementation, we learned how to\
+extend and modify the base application code to grow it into a full-fledged web ap-\
+plication according to our desired features. You can apply similar strategies to\
+grow the skeleton application into any real-world application of your choosing.\
+In the next chapter, we will expand further on these abilities in the MERN stack\
+and unlock new possibilities as we develop an online classroom application by\
+extending the skeleton application.\
+\cf3 Comment count update 
+\fs35\fsmilli17780 \cf2 Summary\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 Full-Stack React Projects - Second Edition\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs40 \cf3 Developing Web Applications with MERN}

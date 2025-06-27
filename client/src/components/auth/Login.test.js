@@ -3,8 +3,24 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { AuthProvider } from '../../contexts/AuthContext';
 import Login from './Login';
+
+// Mock the AuthContext
+const mockLogin = jest.fn();
+const mockNavigate = jest.fn();
+
+jest.mock('../../contexts/AuthContext', () => ({
+    useAuth: () => ({
+        login: mockLogin,
+        error: null,
+        isAuthenticated: false,
+    }),
+}));
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockNavigate,
+}));
 
 const testTheme = createTheme({
     palette: {
@@ -16,11 +32,9 @@ const testTheme = createTheme({
 const renderLogin = () => {
     return render(
         <ThemeProvider theme={testTheme}>
-            <AuthProvider>
-                <BrowserRouter>
-                    <Login />
-                </BrowserRouter>
-            </AuthProvider>
+            <BrowserRouter>
+                <Login />
+            </BrowserRouter>
         </ThemeProvider>
     );
 };
@@ -28,6 +42,7 @@ const renderLogin = () => {
 describe('Login Component', () => {
     beforeEach(() => {
         localStorage.clear();
+        jest.clearAllMocks();
     });
 
     describe('Rendering', () => {
@@ -141,11 +156,7 @@ describe('Login Component', () => {
 
     describe('Form Submission', () => {
         it('should handle successful login', async () => {
-            const mockNavigate = jest.fn();
-            jest.doMock('react-router-dom', () => ({
-                ...jest.requireActual('react-router-dom'),
-                useNavigate: () => mockNavigate,
-            }));
+            mockLogin.mockResolvedValue({ success: true });
 
             renderLogin();
 
@@ -158,11 +169,20 @@ describe('Login Component', () => {
             const submitButton = screen.getByRole('button', { name: /sign in/i });
             await userEvent.click(submitButton);
 
-            // Note: This test would need proper mocking of the AuthContext
-            // The actual login logic is tested in AuthContext.test.js
+            await waitFor(() => {
+                expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+                expect(mockNavigate).toHaveBeenCalledWith('/');
+            });
         });
 
         it('should show loading state during submission', async () => {
+            // Mock login to return a delayed promise
+            let resolveLogin;
+            const loginPromise = new Promise((resolve) => {
+                resolveLogin = resolve;
+            });
+            mockLogin.mockReturnValue(loginPromise);
+
             renderLogin();
 
             const emailInput = screen.getByLabelText(/email address/i);
@@ -175,10 +195,22 @@ describe('Login Component', () => {
             await userEvent.click(submitButton);
 
             // The button should show loading state
-            expect(submitButton).toBeDisabled();
+            await waitFor(() => {
+                expect(submitButton).toBeDisabled();
+            });
+
+            // Resolve the promise to clean up
+            resolveLogin({ success: true });
         });
 
         it('should disable form inputs during submission', async () => {
+            // Mock login to return a delayed promise
+            let resolveLogin;
+            const loginPromise = new Promise((resolve) => {
+                resolveLogin = resolve;
+            });
+            mockLogin.mockReturnValue(loginPromise);
+
             renderLogin();
 
             const emailInput = screen.getByLabelText(/email address/i);
@@ -190,8 +222,13 @@ describe('Login Component', () => {
             const submitButton = screen.getByRole('button', { name: /sign in/i });
             await userEvent.click(submitButton);
 
-            expect(emailInput).toBeDisabled();
-            expect(passwordInput).toBeDisabled();
+            await waitFor(() => {
+                expect(emailInput).toBeDisabled();
+                expect(passwordInput).toBeDisabled();
+            });
+
+            // Resolve the promise to clean up
+            resolveLogin({ success: true });
         });
     });
 

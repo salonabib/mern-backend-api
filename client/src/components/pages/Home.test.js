@@ -42,16 +42,15 @@ describe('Home Component', () => {
         it('should render welcome message for non-authenticated users', () => {
             renderHome();
 
-            expect(screen.getByText('Welcome to MERN Stack App')).toBeInTheDocument();
-            expect(screen.getByText('A full-stack web application built with MongoDB, Express, React, and Node.js')).toBeInTheDocument();
+            expect(screen.getByText('Welcome to MERN Social')).toBeInTheDocument();
+            expect(screen.getByText('A full-stack social media application built with the MERN stack.')).toBeInTheDocument();
         });
 
         it('should display call-to-action buttons', () => {
             renderHome();
 
-            expect(screen.getByRole('button', { name: /get started/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
+            expect(screen.getByRole('link', { name: /get started/i })).toBeInTheDocument();
+            expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
         });
 
         it('should display features section', () => {
@@ -66,13 +65,11 @@ describe('Home Component', () => {
         it('should have proper navigation links', () => {
             renderHome();
 
-            const getStartedButton = screen.getByRole('button', { name: /get started/i });
-            const signInButton = screen.getByRole('button', { name: /sign in/i });
-            const createAccountButton = screen.getByRole('button', { name: /create account/i });
+            const getStartedButton = screen.getByRole('link', { name: /get started/i });
+            const signInButton = screen.getByRole('link', { name: /sign in/i });
 
             expect(getStartedButton).toHaveAttribute('href', '/register');
             expect(signInButton).toHaveAttribute('href', '/login');
-            expect(createAccountButton).toHaveAttribute('href', '/register');
         });
 
         it('should display feature descriptions', () => {
@@ -110,11 +107,11 @@ describe('Home Component', () => {
             clearError: jest.fn(),
         };
 
-        it('should render personalized welcome message', () => {
+        it('should display welcome message for authenticated user', () => {
             renderWithAuth(mockAuthContext);
 
             expect(screen.getByText('Welcome back, John!')).toBeInTheDocument();
-            expect(screen.getByText("You're successfully logged into your MERN stack application.")).toBeInTheDocument();
+            expect(screen.getByText("You're successfully logged into your MERN Social application.")).toBeInTheDocument();
         });
 
         it('should display user profile card', () => {
@@ -126,19 +123,11 @@ describe('Home Component', () => {
             expect(screen.getByText('john@example.com')).toBeInTheDocument();
         });
 
-        it('should display quick actions', () => {
-            renderWithAuth(mockAuthContext);
-
-            expect(screen.getByText('Quick Actions')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /edit profile/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /view profile/i })).toBeInTheDocument();
-        });
-
         it('should have proper navigation links for authenticated user', () => {
             renderWithAuth(mockAuthContext);
 
-            const viewProfileButton = screen.getByRole('button', { name: /view profile/i });
-            const editProfileButton = screen.getByRole('button', { name: /edit profile/i });
+            const viewProfileButton = screen.getByRole('link', { name: /view profile/i });
+            const editProfileButton = screen.getByRole('link', { name: /edit profile/i });
 
             expect(viewProfileButton).toHaveAttribute('href', '/profile');
             expect(editProfileButton).toHaveAttribute('href', '/profile/edit');
@@ -183,13 +172,13 @@ describe('Home Component', () => {
             renderWithAuth(mockAdminContext);
 
             expect(screen.getByText('Welcome back, Admin!')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /manage users/i })).toBeInTheDocument();
+            expect(screen.getByRole('link', { name: /manage users/i })).toBeInTheDocument();
         });
 
         it('should have proper navigation links for admin', () => {
             renderWithAuth(mockAdminContext);
 
-            const manageUsersButton = screen.getByRole('button', { name: /manage users/i });
+            const manageUsersButton = screen.getByRole('link', { name: /manage users/i });
             expect(manageUsersButton).toHaveAttribute('href', '/users');
         });
     });
@@ -208,15 +197,15 @@ describe('Home Component', () => {
 
             const mainHeading = screen.getByRole('heading', { level: 1 });
             expect(mainHeading).toBeInTheDocument();
-            expect(mainHeading).toHaveTextContent('Welcome to MERN Stack App');
+            expect(mainHeading).toHaveTextContent('Welcome to MERN Social');
         });
 
         it('should have proper button styling', () => {
             renderHome();
 
-            const buttons = screen.getAllByRole('button');
-            buttons.forEach(button => {
-                expect(button).toHaveClass('MuiButton-root');
+            const links = screen.getAllByRole('link');
+            links.forEach(link => {
+                expect(link).toHaveClass('MuiButton-root');
             });
         });
     });
@@ -226,7 +215,7 @@ describe('Home Component', () => {
             // Test that component renders without errors
             renderHome();
 
-            expect(screen.getByText('Welcome to MERN Stack App')).toBeInTheDocument();
+            expect(screen.getByText('Welcome to MERN Social')).toBeInTheDocument();
         });
     });
 
@@ -239,21 +228,20 @@ describe('Home Component', () => {
             expect(headings.length).toBeGreaterThan(0);
 
             // Check for proper button labels
-            const buttons = screen.getAllByRole('button');
-            buttons.forEach(button => {
-                expect(button.textContent.trim()).toBeTruthy();
+            const links = screen.getAllByRole('link');
+            links.forEach(link => {
+                expect(link.textContent.trim()).toBeTruthy();
             });
         });
 
         it('should have proper link attributes', () => {
             renderHome();
 
-            // Since we're using buttons with role="button" that have href attributes,
-            // we should check that all buttons with href attributes have them
-            const buttons = screen.getAllByRole('button');
-            buttons.forEach(button => {
-                if (button.hasAttribute('href')) {
-                    expect(button).toHaveAttribute('href');
+            // Since we're using links styled as buttons, check all links
+            const links = screen.getAllByRole('link');
+            links.forEach(link => {
+                if (link.hasAttribute('href')) {
+                    expect(link).toHaveAttribute('href');
                 }
             });
         });

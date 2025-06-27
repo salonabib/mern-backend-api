@@ -30,7 +30,7 @@ describe('Navbar Component', () => {
         it('should render app title', () => {
             renderNavbar();
 
-            expect(screen.getByText('MERN App')).toBeInTheDocument();
+            expect(screen.getByText('MERN Social')).toBeInTheDocument();
         });
 
         it('should display login and register buttons for non-authenticated users', () => {
@@ -121,14 +121,14 @@ describe('Navbar Component', () => {
         it('should have app title as home link', () => {
             renderNavbar();
 
-            const appTitle = screen.getByText('MERN App');
+            const appTitle = screen.getByText('MERN Social');
             expect(appTitle).toHaveAttribute('href', '/');
         });
 
         it('should have proper link styling', () => {
             renderNavbar();
 
-            const appTitle = screen.getByText('MERN App');
+            const appTitle = screen.getByText('MERN Social');
             expect(appTitle).toHaveClass('MuiTypography-root');
         });
     });
@@ -189,7 +189,7 @@ describe('Navbar Component', () => {
             renderNavbar();
 
             // Test that navbar renders without errors on mobile
-            expect(screen.getByText('MERN App')).toBeInTheDocument();
+            expect(screen.getByText('MERN Social')).toBeInTheDocument();
         });
 
         it('should handle menu interactions on mobile', async () => {

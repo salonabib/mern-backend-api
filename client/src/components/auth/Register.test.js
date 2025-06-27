@@ -284,12 +284,11 @@ describe('Register Component', () => {
 
             // Check that form data was logged (excluding password)
             await waitFor(() => {
-                expect(consoleSpy.log).toHaveBeenCalledWith('Submitting registration:', {
+                expect(consoleSpy.log).toHaveBeenNthCalledWith(1, 'Submitting registration:', {
                     firstName: 'John',
                     lastName: 'Doe',
                     username: 'johndoe',
-                    email: 'john@example.com',
-                    confirmPassword: 'password123'
+                    email: 'john@example.com'
                 });
             });
         });

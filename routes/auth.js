@@ -17,10 +17,10 @@ router.post('/register', [
         .withMessage('Username can only contain letters, numbers, and underscores'),
     body('email')
         .isEmail()
-        .withMessage('Please enter a valid email'),
+        .withMessage('Email is invalid'),
     body('password')
         .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long'),
+        .withMessage('Password must be at least 6 characters'),
     body('firstName')
         .notEmpty()
         .withMessage('First name is required')
@@ -31,19 +31,24 @@ router.post('/register', [
         .withMessage('Last name is required')
         .isLength({ max: 50 })
         .withMessage('Last name cannot exceed 50 characters')
-], validate, async (req, res) => {
+], validate, async (req, res, next) => {
     try {
         const { username, email, password, firstName, lastName } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({
-            $or: [{ email }, { username }]
-        });
-
-        if (existingUser) {
+        // Check for duplicate email
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
             return res.status(400).json({
                 success: false,
-                message: 'User with this email or username already exists'
+                message: 'Email already exists'
+            });
+        }
+        // Check for duplicate username
+        const usernameExists = await User.findOne({ username });
+        if (usernameExists) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username already exists'
             });
         }
 
@@ -79,8 +84,11 @@ router.post('/register', [
 // @access  Public
 router.post('/login', [
     body('email')
+        .notEmpty()
+        .withMessage('Email is required')
+        .bail()
         .isEmail()
-        .withMessage('Please enter a valid email'),
+        .withMessage('Email is invalid'),
     body('password')
         .notEmpty()
         .withMessage('Password is required')
@@ -98,6 +106,14 @@ router.post('/login', [
             });
         }
 
+        // Check if user is active (move before password check)
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account is deactivated'
+            });
+        }
+
         // Check if password matches
         const isMatch = await user.comparePassword(password);
 
@@ -105,14 +121,6 @@ router.post('/login', [
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
-            });
-        }
-
-        // Check if user is active
-        if (!user.isActive) {
-            return res.status(401).json({
-                success: false,
-                message: 'Account is deactivated'
             });
         }
 
@@ -166,17 +174,32 @@ router.put('/profile', protect, [
         .optional()
         .isLength({ max: 50 })
         .withMessage('Last name cannot exceed 50 characters'),
+    body('email')
+        .optional()
+        .isEmail()
+        .withMessage('Email is invalid'),
     body('bio')
         .optional()
         .isLength({ max: 500 })
         .withMessage('Bio cannot exceed 500 characters')
 ], validate, async (req, res) => {
     try {
-        const { firstName, lastName, bio, avatar } = req.body;
+        const { firstName, lastName, bio, avatar, email } = req.body;
+
+        // Check for duplicate email
+        if (email) {
+            const emailExists = await User.findOne({ email, _id: { $ne: req.user.id } });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists'
+                });
+            }
+        }
 
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { firstName, lastName, bio, avatar },
+            { firstName, lastName, bio, avatar, email },
             { new: true, runValidators: true }
         );
 
@@ -202,8 +225,11 @@ router.put('/password', protect, [
         .notEmpty()
         .withMessage('Current password is required'),
     body('newPassword')
+        .notEmpty()
+        .withMessage('New password is required')
+        .bail()
         .isLength({ min: 6 })
-        .withMessage('New password must be at least 6 characters long')
+        .withMessage('Password must be at least 6 characters')
 ], validate, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -235,6 +261,19 @@ router.put('/password', protect, [
             error: error.message
         });
     }
+});
+
+// Custom validation error handler
+router.use((err, req, res, next) => {
+    if (err && err.errors) {
+        // express-validator errors
+        const messages = err.errors.map(e => e.msg);
+        return res.status(400).json({
+            success: false,
+            message: messages[0] || 'Validation failed'
+        });
+    }
+    next(err);
 });
 
 module.exports = router; 

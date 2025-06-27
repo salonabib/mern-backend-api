@@ -11,6 +11,7 @@ import Profile from './components/user/Profile';
 import UserList from './components/user/UserList';
 import UserDetail from './components/user/UserDetail';
 import EditProfile from './components/user/EditProfile';
+import Newsfeed from './components/posts/Newsfeed';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Create theme
@@ -47,11 +48,7 @@ const AdminRoute = ({ children }) => {
     return <LoadingSpinner />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
-  return user?.role === 'admin' ? children : <Navigate to="/" />;
+  return isAuthenticated && user?.role === 'admin' ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -67,6 +64,14 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route
+                  path="/newsfeed"
+                  element={
+                    <ProtectedRoute>
+                      <Newsfeed />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/profile"
                   element={

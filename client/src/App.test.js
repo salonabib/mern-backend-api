@@ -45,7 +45,7 @@ test('renders home page by default', () => {
   render(<App />, { wrapper: TestWrapper });
 
   // Check that the home page content is rendered
-  const welcomeHeading = screen.getByText('Welcome to MERN Stack App');
+  const welcomeHeading = screen.getByText('Welcome to MERN Social');
   expect(welcomeHeading).toBeInTheDocument();
 
   // Check that the features section is rendered

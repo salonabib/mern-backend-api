@@ -17,13 +17,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mern-app', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// Database connection - only connect if not in test environment and not already connected
+if (process.env.NODE_ENV !== 'test' && mongoose.connection.readyState === 0) {
+    mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mern-app', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+        .then(() => console.log('MongoDB connected successfully'))
+        .catch(err => console.error('MongoDB connection error:', err));
+}
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -53,8 +55,11 @@ app.use('*', (req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Only start server if not being required as a module
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
 module.exports = app; 

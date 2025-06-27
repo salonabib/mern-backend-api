@@ -195,7 +195,7 @@ const UserList = () => {
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 <Avatar
-                                                    src={user.avatar}
+                                                    src={user.photo ? `/api/users/${user._id}/photo` : null}
                                                     alt={user.firstName}
                                                     sx={{ width: 40, height: 40, mr: 2 }}
                                                 >

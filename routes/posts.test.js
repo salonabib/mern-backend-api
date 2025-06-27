@@ -528,4 +528,266 @@ describe('DELETE /api/posts/:id', () => {
 
         expect(response.status).toBe(401);
     });
+});
+
+describe('Database Integration Tests', () => {
+    it('should handle multiple concurrent post creations without database conflicts', async () => {
+        // This test ensures that the API can handle multiple concurrent post creations
+        // without any database index conflicts or race conditions
+
+        const postPromises = [];
+        const postTexts = [
+            'Concurrent post 1',
+            'Concurrent post 2',
+            'Concurrent post 3',
+            'Concurrent post 4',
+            'Concurrent post 5'
+        ];
+
+        // Create multiple posts concurrently through the API
+        for (const text of postTexts) {
+            const promise = request(app)
+                .post('/api/posts')
+                .set('Authorization', `Bearer ${token1}`)
+                .send({ text });
+            postPromises.push(promise);
+        }
+
+        // Wait for all posts to be created
+        const responses = await Promise.all(postPromises);
+
+        // Verify all posts were created successfully
+        expect(responses).toHaveLength(5);
+
+        for (let i = 0; i < responses.length; i++) {
+            expect(responses[i].status).toBe(201);
+            expect(responses[i].body.success).toBe(true);
+            expect(responses[i].body.data.text).toBe(postTexts[i]);
+            expect(responses[i].body.data.postedBy._id).toBe(testUser1._id.toString());
+        }
+
+        // Verify all posts exist in the database
+        const allPosts = await Post.find({ postedBy: testUser1._id });
+        expect(allPosts.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('should handle rapid post creation and retrieval without index issues', async () => {
+        // This test simulates rapid post creation and retrieval to catch
+        // any database index or schema issues that might occur in production
+
+        const createdPosts = [];
+
+        // Create 10 posts rapidly
+        for (let i = 0; i < 10; i++) {
+            const response = await request(app)
+                .post('/api/posts')
+                .set('Authorization', `Bearer ${token1}`)
+                .send({ text: `Rapid post ${i + 1}` });
+
+            expect(response.status).toBe(201);
+            expect(response.body.success).toBe(true);
+            createdPosts.push(response.body.data);
+        }
+
+        // Immediately retrieve all posts
+        const feedResponse = await request(app)
+            .get('/api/posts/feed')
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(feedResponse.status).toBe(200);
+        expect(feedResponse.body.success).toBe(true);
+        expect(feedResponse.body.data.length).toBeGreaterThanOrEqual(10);
+
+        // Verify each created post can be retrieved individually
+        for (const post of createdPosts) {
+            const getResponse = await request(app)
+                .get(`/api/posts/${post._id}`)
+                .set('Authorization', `Bearer ${token1}`);
+
+            expect(getResponse.status).toBe(200);
+            expect(getResponse.body.success).toBe(true);
+            expect(getResponse.body.data._id).toBe(post._id);
+        }
+    });
+
+    it('should handle posts with photos without database schema errors', async () => {
+        // This test ensures that posts with photos can be created and retrieved
+        // without any database schema or index issues
+
+        const photoData = Buffer.from('fake-image-data-for-api-testing');
+
+        const response = await request(app)
+            .post('/api/posts')
+            .set('Authorization', `Bearer ${token1}`)
+            .field('text', 'Test post with photo via API')
+            .attach('photo', photoData, 'test-image.jpg');
+
+        expect(response.status).toBe(201);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.text).toBe('Test post with photo via API');
+        expect(response.body.data.photo).toBeDefined();
+        expect(response.body.data.photo.contentType).toBeDefined();
+
+        // Verify the post can be retrieved
+        const getResponse = await request(app)
+            .get(`/api/posts/${response.body.data._id}`)
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(getResponse.status).toBe(200);
+        expect(getResponse.body.success).toBe(true);
+        expect(getResponse.body.data.photo).toBeDefined();
+
+        // Verify the photo can be retrieved
+        const photoResponse = await request(app)
+            .get(`/api/posts/${response.body.data._id}/photo`);
+
+        expect(photoResponse.status).toBe(200);
+        expect(photoResponse.headers['content-type']).toBeDefined();
+    });
+
+    it('should detect and report database index conflicts', async () => {
+        // This test specifically checks for database index issues
+        // It will fail with a clear error message if there are any unique index conflicts
+
+        try {
+            // Create multiple posts to test for index conflicts
+            const post1 = await request(app)
+                .post('/api/posts')
+                .set('Authorization', `Bearer ${token1}`)
+                .send({ text: 'Index test post 1' });
+
+            const post2 = await request(app)
+                .post('/api/posts')
+                .set('Authorization', `Bearer ${token1}`)
+                .send({ text: 'Index test post 2' });
+
+            const post3 = await request(app)
+                .post('/api/posts')
+                .set('Authorization', `Bearer ${token1}`)
+                .send({ text: 'Index test post 3' });
+
+            // If we get here, no index conflicts occurred
+            expect(post1.status).toBe(201);
+            expect(post2.status).toBe(201);
+            expect(post3.status).toBe(201);
+
+            // Verify all posts have unique IDs
+            const post1Id = post1.body.data._id;
+            const post2Id = post2.body.data._id;
+            const post3Id = post3.body.data._id;
+
+            expect(post1Id).not.toBe(post2Id);
+            expect(post2Id).not.toBe(post3Id);
+            expect(post1Id).not.toBe(post3Id);
+
+        } catch (error) {
+            // If there's a duplicate key error, provide a clear error message
+            if (error.code === 11000 || error.message.includes('duplicate key')) {
+                throw new Error(`Database index conflict detected in API test: ${error.message}. This indicates a stale or conflicting database index that needs to be resolved. Check for unique indexes on fields that shouldn't be unique.`);
+            }
+            throw error;
+        }
+    });
+
+    it('should handle complex post operations without database errors', async () => {
+        // This test performs a series of complex operations to ensure
+        // the database can handle real-world usage patterns
+
+        // 1. Create a post
+        const createResponse = await request(app)
+            .post('/api/posts')
+            .set('Authorization', `Bearer ${token1}`)
+            .send({ text: 'Complex operation test post' });
+
+        expect(createResponse.status).toBe(201);
+        const postId = createResponse.body.data._id;
+
+        // 2. Like the post
+        const likeResponse = await request(app)
+            .put('/api/posts/like')
+            .set('Authorization', `Bearer ${token2}`)
+            .send({ postId });
+
+        expect(likeResponse.status).toBe(200);
+        expect(likeResponse.body.data.likes).toContain(testUser2._id.toString());
+
+        // 3. Add a comment
+        const commentResponse = await request(app)
+            .put('/api/posts/comment')
+            .set('Authorization', `Bearer ${token2}`)
+            .send({ postId, text: 'Test comment' });
+
+        expect(commentResponse.status).toBe(200);
+        expect(commentResponse.body.data.comments).toHaveLength(1);
+
+        // 4. Retrieve the post with all interactions
+        const getResponse = await request(app)
+            .get(`/api/posts/${postId}`)
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(getResponse.status).toBe(200);
+        expect(getResponse.body.data.likes).toContain(testUser2._id.toString());
+        expect(getResponse.body.data.comments).toHaveLength(1);
+
+        // 5. Unlike the post
+        const unlikeResponse = await request(app)
+            .put('/api/posts/unlike')
+            .set('Authorization', `Bearer ${token2}`)
+            .send({ postId });
+
+        expect(unlikeResponse.status).toBe(200);
+        expect(unlikeResponse.body.data.likes).not.toContain(testUser2._id.toString());
+
+        // 6. Verify final state
+        const finalResponse = await request(app)
+            .get(`/api/posts/${postId}`)
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(finalResponse.status).toBe(200);
+        expect(finalResponse.body.data.likes).toHaveLength(0);
+        expect(finalResponse.body.data.comments).toHaveLength(1);
+    });
+
+    it('should validate database schema integrity through API operations', async () => {
+        // This test ensures that all API operations maintain database schema integrity
+        // and that the database schema matches our expectations
+
+        // Create a post and verify all expected fields are present
+        const createResponse = await request(app)
+            .post('/api/posts')
+            .set('Authorization', `Bearer ${token1}`)
+            .send({ text: 'Schema integrity test post' });
+
+        expect(createResponse.status).toBe(201);
+        const post = createResponse.body.data;
+
+        // Verify all expected fields exist and have correct types
+        expect(post._id).toBeDefined();
+        expect(typeof post.text).toBe('string');
+        expect(post.postedBy).toBeDefined();
+        expect(post.postedBy._id).toBe(testUser1._id.toString());
+        expect(Array.isArray(post.likes)).toBe(true);
+        expect(Array.isArray(post.comments)).toBe(true);
+        expect(post.createdAt).toBeDefined();
+        expect(post.updatedAt).toBeDefined();
+        expect(post.commentCount).toBe(0);
+        expect(post.likeCount).toBe(0);
+
+        // Verify the post can be retrieved from the database
+        const getResponse = await request(app)
+            .get(`/api/posts/${post._id}`)
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(getResponse.status).toBe(200);
+        expect(getResponse.body.data._id).toBe(post._id);
+        expect(getResponse.body.data.text).toBe(post.text);
+
+        // Verify the post appears in the feed
+        const feedResponse = await request(app)
+            .get('/api/posts/feed')
+            .set('Authorization', `Bearer ${token1}`);
+
+        expect(feedResponse.status).toBe(200);
+        expect(feedResponse.body.data.some(p => p._id === post._id)).toBe(true);
+    });
 }); 

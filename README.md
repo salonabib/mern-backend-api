@@ -199,6 +199,29 @@ cd client
 npm test
 ```
 
+### Database Integration Tests
+**Important**: Run these tests to verify database health and catch index conflicts:
+
+```bash
+npm run test:db
+```
+
+This test script will:
+- ✅ Create multiple posts without database index conflicts
+- ✅ Test concurrent post creation
+- ✅ Verify schema integrity
+- ✅ Test posts with photos
+- ✅ Validate like and comment operations
+- ✅ Detect and report any database index issues
+
+**Why this matters**: If you encounter a "duplicate key error" when creating posts, this test will help identify and resolve database index conflicts. The test provides clear error messages and solutions for fixing index issues.
+
+### API Tests
+Test the API endpoints:
+```bash
+npm run test:api
+```
+
 ## 📦 Deployment
 
 ### Backend Deployment

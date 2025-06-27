@@ -345,4 +345,180 @@ describe('Post Model Test', () => {
             expect(updatedPost.comments[0].createdAt).toBeInstanceOf(Date);
         });
     });
+
+    describe('Database Integration Tests', () => {
+        it('should create multiple posts without database index conflicts', async () => {
+            // This test ensures that post creation works without any database index issues
+            // It will fail if there are stale indexes or schema conflicts
+
+            const posts = [];
+            const postTexts = [
+                'First test post',
+                'Second test post',
+                'Third test post',
+                'Fourth test post',
+                'Fifth test post'
+            ];
+
+            // Create multiple posts rapidly to test for index conflicts
+            for (let i = 0; i < postTexts.length; i++) {
+                const postData = {
+                    text: postTexts[i],
+                    postedBy: testUser._id
+                };
+
+                const post = new Post(postData);
+                const savedPost = await post.save();
+                posts.push(savedPost);
+
+                // Verify each post was created successfully
+                expect(savedPost._id).toBeDefined();
+                expect(savedPost.text).toBe(postTexts[i]);
+                expect(savedPost.postedBy).toEqual(testUser._id);
+            }
+
+            // Verify all posts exist in database
+            const allPosts = await Post.find({ postedBy: testUser._id });
+            expect(allPosts).toHaveLength(postTexts.length);
+
+            // Verify each post can be retrieved individually
+            for (const post of posts) {
+                const retrievedPost = await Post.findById(post._id);
+                expect(retrievedPost).toBeDefined();
+                expect(retrievedPost.text).toBe(post.text);
+            }
+        });
+
+        it('should handle concurrent post creation without conflicts', async () => {
+            // This test simulates concurrent post creation to catch race conditions
+            // and index conflicts that might occur in production
+
+            const concurrentPosts = [];
+            const promises = [];
+
+            // Create 10 posts concurrently
+            for (let i = 0; i < 10; i++) {
+                const postData = {
+                    text: `Concurrent post ${i + 1}`,
+                    postedBy: testUser._id
+                };
+
+                const promise = new Post(postData).save();
+                promises.push(promise);
+            }
+
+            // Wait for all posts to be created
+            const results = await Promise.all(promises);
+
+            // Verify all posts were created successfully
+            expect(results).toHaveLength(10);
+
+            for (let i = 0; i < results.length; i++) {
+                expect(results[i]._id).toBeDefined();
+                expect(results[i].text).toBe(`Concurrent post ${i + 1}`);
+                expect(results[i].postedBy).toEqual(testUser._id);
+            }
+
+            // Verify all posts exist in database
+            const allPosts = await Post.find({ postedBy: testUser._id });
+            expect(allPosts.length).toBeGreaterThanOrEqual(10);
+        });
+
+        it('should create posts with photos without database errors', async () => {
+            // This test ensures that posts with photos can be created without
+            // any database schema or index issues
+
+            const photoData = Buffer.from('fake-image-data-for-testing');
+            const postData = {
+                text: 'Test post with photo',
+                postedBy: testUser._id,
+                photo: {
+                    data: photoData,
+                    contentType: 'image/jpeg'
+                }
+            };
+
+            const post = new Post(postData);
+            const savedPost = await post.save();
+
+            // Verify post was created with photo
+            expect(savedPost._id).toBeDefined();
+            expect(savedPost.text).toBe('Test post with photo');
+            expect(savedPost.photo).toBeDefined();
+            expect(savedPost.photo.contentType).toBe('image/jpeg');
+            expect(Buffer.from(savedPost.photo.data).equals(photoData)).toBe(true);
+
+            // Verify post can be retrieved from database
+            const retrievedPost = await Post.findById(savedPost._id);
+            expect(retrievedPost).toBeDefined();
+            expect(retrievedPost.photo).toBeDefined();
+            expect(retrievedPost.photo.contentType).toBe('image/jpeg');
+        });
+
+        it('should handle database index validation', async () => {
+            // This test specifically checks for database index issues
+            // It will fail if there are any unique index conflicts or schema mismatches
+
+            try {
+                // Create a post and immediately try to create another
+                // This helps catch any unique index issues
+                const post1 = await new Post({
+                    text: 'Index test post 1',
+                    postedBy: testUser._id
+                }).save();
+
+                const post2 = await new Post({
+                    text: 'Index test post 2',
+                    postedBy: testUser._id
+                }).save();
+
+                // If we get here, no index conflicts occurred
+                expect(post1._id).toBeDefined();
+                expect(post2._id).toBeDefined();
+                expect(post1._id.toString()).not.toBe(post2._id.toString());
+
+            } catch (error) {
+                // If there's a duplicate key error, it means there's an index issue
+                if (error.code === 11000) {
+                    throw new Error(`Database index conflict detected: ${error.message}. This indicates a stale or conflicting database index that needs to be resolved.`);
+                }
+                throw error;
+            }
+        });
+
+        it('should validate database schema integrity', async () => {
+            // This test ensures the database schema matches our model expectations
+            // It will catch any schema drift or missing fields
+
+            const post = await new Post({
+                text: 'Schema validation test post',
+                postedBy: testUser._id
+            }).save();
+
+            // Verify all expected fields exist and have correct types
+            expect(post._id).toBeDefined();
+            expect(typeof post.text).toBe('string');
+            expect(post.postedBy).toBeDefined();
+            expect(Array.isArray(post.likes)).toBe(true);
+            expect(Array.isArray(post.comments)).toBe(true);
+            expect(post.createdAt).toBeInstanceOf(Date);
+            expect(post.updatedAt).toBeInstanceOf(Date);
+
+            // Verify virtual fields work correctly
+            expect(post.commentCount).toBe(0);
+            expect(post.likeCount).toBe(0);
+
+            // Add a like and comment to test virtual fields
+            post.likes.push(testUser._id);
+            post.comments.push({
+                text: 'Test comment',
+                postedBy: testUser._id
+            });
+            await post.save();
+
+            // Verify virtual fields update correctly
+            expect(post.likeCount).toBe(1);
+            expect(post.commentCount).toBe(1);
+        });
+    });
 }); 

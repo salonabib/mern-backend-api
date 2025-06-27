@@ -1,63 +1,64 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import {
     Container,
-    Paper,
     Typography,
     Box,
-    Avatar,
-    Button,
-    Grid,
     Card,
     CardContent,
+    Button,
+    Avatar,
+    Alert,
+    CircularProgress,
+    Grid,
+    Paper,
     Chip,
     Divider,
-    CircularProgress,
-    Alert,
 } from '@mui/material';
-import {
-    ArrowBack,
-    Edit,
-    Email,
-    Person,
-    CalendarToday,
-    Badge,
-} from '@mui/icons-material';
+import { ArrowBack, Edit } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const UserDetail = () => {
     const { id } = useParams();
-    const { api, user: currentUser } = useAuth();
+    const { user: currentUser } = useAuth();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const fetchUser = useCallback(async () => {
-        try {
-            setLoading(true);
-            const response = await api.get(`/users/${id}`);
-            setUser(response.data.data);
-        } catch (err) {
-            setError('Failed to fetch user details');
-            console.error('Error fetching user:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [api, id]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchUser();
-    }, [fetchUser]);
+        const fetchUser = async () => {
+            try {
+                setLoading(true);
+                // This would be replaced with actual API call
+                // const response = await api.get(`/users/${id}`);
+                // setUser(response.data.user);
 
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
+                // Mock data for now
+                setUser({
+                    _id: id,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    username: 'johndoe',
+                    email: 'john@example.com',
+                    role: 'user',
+                    isActive: true,
+                    avatar: '',
+                    bio: 'This is a sample bio for the user.',
+                    createdAt: '2024-01-01T00:00:00.000Z',
+                    updatedAt: '2024-01-01T00:00:00.000Z',
+                });
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchUser();
+        }
+    }, [id]);
 
     if (loading) {
         return (

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Container,
     Typography,
@@ -8,8 +8,9 @@ import {
     CardContent,
     Button,
     Avatar,
-    Alert,
-    CircularProgress,
+    Paper,
+    Chip,
+    Divider,
     Grid,
 } from '@mui/material';
 import { Edit } from '@mui/icons-material';
@@ -26,14 +27,6 @@ const Profile = () => {
     if (!user) {
         return null;
     }
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    };
 
     return (
         <Container maxWidth="md">

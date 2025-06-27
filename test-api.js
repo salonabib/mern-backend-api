@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:5001/api';
+const BASE_URL = 'http://localhost:5000/api';
 
 // Test data
 const testUser = {
@@ -100,7 +100,7 @@ async function testAPI() {
 
     } catch (error) {
         console.log('❌ Server connection failed:', error.message);
-        console.log('   Make sure the server is running on port 5001');
+        console.log('   Make sure the server is running on port 5000');
     }
 }
 

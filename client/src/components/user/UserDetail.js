@@ -155,107 +155,81 @@ const UserDetail = () => {
 
                     {/* User Information */}
                     <Grid container spacing={4}>
-                        <Grid xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="h6" component="h3" gutterBottom>
+                                    <Typography variant="h5" component="h2" gutterBottom>
                                         Personal Information
                                     </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Person sx={{ mr: 2, color: 'primary.main' }} />
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                                        <Avatar
+                                            src={user?.avatar}
+                                            alt={user?.firstName}
+                                            sx={{ width: 80, height: 80, mr: 3 }}
+                                        >
+                                            {user?.firstName?.charAt(0)}
+                                        </Avatar>
                                         <Box>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Full Name
+                                            <Typography variant="h4" gutterBottom>
+                                                {user?.firstName} {user?.lastName}
                                             </Typography>
-                                            <Typography variant="body1">
-                                                {user.firstName} {user.lastName}
+                                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                                @{user?.username}
+                                            </Typography>
+                                            <Typography color="text.secondary">
+                                                {user?.email}
                                             </Typography>
                                         </Box>
                                     </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Badge sx={{ mr: 2, color: 'primary.main' }} />
-                                        <Box>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Username
-                                            </Typography>
-                                            <Typography variant="body1">
-                                                @{user.username}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Email sx={{ mr: 2, color: 'primary.main' }} />
-                                        <Box>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Email Address
-                                            </Typography>
-                                            <Typography variant="body1">
-                                                {user.email}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <CalendarToday sx={{ mr: 2, color: 'primary.main' }} />
-                                        <Box>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Member Since
-                                            </Typography>
-                                            <Typography variant="body1">
-                                                {formatDate(user.createdAt)}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
+                                    {user?.bio && (
+                                        <Typography variant="body1" paragraph>
+                                            {user.bio}
+                                        </Typography>
+                                    )}
                                 </CardContent>
                             </Card>
                         </Grid>
 
-                        <Grid xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="h6" component="h3" gutterBottom>
-                                        Account Information
+                                    <Typography variant="h5" component="h2" gutterBottom>
+                                        Account Details
                                     </Typography>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                                            Account Status
-                                        </Typography>
-                                        <Chip
-                                            label={user.isActive ? 'Active Account' : 'Inactive Account'}
-                                            color={user.isActive ? 'success' : 'error'}
-                                            variant="outlined"
-                                        />
-                                    </Box>
-
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                                            User Role
-                                        </Typography>
-                                        <Chip
-                                            label={user.role === 'admin' ? 'Administrator' : 'Regular User'}
-                                            color={user.role === 'admin' ? 'primary' : 'default'}
-                                            variant="outlined"
-                                        />
-                                    </Box>
-
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                                            Last Updated
-                                        </Typography>
-                                        <Typography variant="body1">
-                                            {formatDate(user.updatedAt)}
-                                        </Typography>
-                                    </Box>
-
-                                    {user.bio && (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                         <Box>
-                                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                Bio
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                Role
                                             </Typography>
                                             <Typography variant="body1">
-                                                {user.bio}
+                                                {user?.role === 'admin' ? 'Administrator' : 'User'}
                                             </Typography>
                                         </Box>
-                                    )}
+                                        <Box>
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                Status
+                                            </Typography>
+                                            <Typography variant="body1">
+                                                {user?.isActive ? 'Active' : 'Inactive'}
+                                            </Typography>
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                Member Since
+                                            </Typography>
+                                            <Typography variant="body1">
+                                                {new Date(user?.createdAt).toLocaleDateString()}
+                                            </Typography>
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                Last Updated
+                                            </Typography>
+                                            <Typography variant="body1">
+                                                {new Date(user?.updatedAt).toLocaleDateString()}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
                                 </CardContent>
                             </Card>
                         </Grid>

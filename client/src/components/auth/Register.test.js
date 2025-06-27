@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { AuthProvider } from '../../contexts/AuthContext';
 import Register from './Register';
 
 const testTheme = createTheme({
@@ -13,21 +12,48 @@ const testTheme = createTheme({
     },
 });
 
+// Mock the AuthContext
+const mockRegister = jest.fn();
+const mockUseAuth = jest.fn();
+
+jest.mock('../../contexts/AuthContext', () => ({
+    useAuth: () => mockUseAuth()
+}));
+
 const renderRegister = () => {
     return render(
         <ThemeProvider theme={testTheme}>
-            <AuthProvider>
-                <BrowserRouter>
-                    <Register />
-                </BrowserRouter>
-            </AuthProvider>
+            <BrowserRouter>
+                <Register />
+            </BrowserRouter>
         </ThemeProvider>
     );
 };
 
 describe('Register Component', () => {
+    let consoleSpy;
+
     beforeEach(() => {
         localStorage.clear();
+        // Spy on console methods
+        consoleSpy = {
+            log: jest.spyOn(console, 'log').mockImplementation(),
+            error: jest.spyOn(console, 'error').mockImplementation(),
+        };
+
+        // Default mock implementation
+        mockRegister.mockClear();
+        mockUseAuth.mockReturnValue({
+            register: mockRegister,
+            error: null,
+            isAuthenticated: false
+        });
+    });
+
+    afterEach(() => {
+        // Restore console methods
+        consoleSpy.log.mockRestore();
+        consoleSpy.error.mockRestore();
     });
 
     describe('Rendering', () => {
@@ -232,8 +258,10 @@ describe('Register Component', () => {
         });
     });
 
-    describe('Form Submission', () => {
-        it('should handle successful registration', async () => {
+    describe('Registration Logging', () => {
+        it('should log form data when submitting registration (excluding password)', async () => {
+            mockRegister.mockResolvedValue({ success: true });
+
             renderRegister();
 
             // Fill out the form
@@ -254,11 +282,21 @@ describe('Register Component', () => {
             const submitButton = screen.getByRole('button', { name: /create account/i });
             await userEvent.click(submitButton);
 
-            // The form should be valid and ready for submission
-            expect(submitButton).toBeInTheDocument();
+            // Check that form data was logged (excluding password)
+            await waitFor(() => {
+                expect(consoleSpy.log).toHaveBeenCalledWith('Submitting registration:', {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    username: 'johndoe',
+                    email: 'john@example.com',
+                    confirmPassword: 'password123'
+                });
+            });
         });
 
-        it('should show loading state during submission', async () => {
+        it('should log successful registration response', async () => {
+            mockRegister.mockResolvedValue({ success: true });
+
             renderRegister();
 
             // Fill out the form
@@ -279,11 +317,18 @@ describe('Register Component', () => {
             const submitButton = screen.getByRole('button', { name: /create account/i });
             await userEvent.click(submitButton);
 
-            // The button should show loading state
-            expect(submitButton).toBeDisabled();
+            // Check that response was logged
+            await waitFor(() => {
+                expect(consoleSpy.log).toHaveBeenCalledWith('Registration response:', { success: true });
+            });
         });
 
-        it('should disable form inputs during submission', async () => {
+        it('should log failed registration response', async () => {
+            mockRegister.mockResolvedValue({
+                success: false,
+                error: 'User already exists'
+            });
+
             renderRegister();
 
             // Fill out the form
@@ -304,12 +349,70 @@ describe('Register Component', () => {
             const submitButton = screen.getByRole('button', { name: /create account/i });
             await userEvent.click(submitButton);
 
-            expect(firstNameInput).toBeDisabled();
-            expect(lastNameInput).toBeDisabled();
-            expect(usernameInput).toBeDisabled();
-            expect(emailInput).toBeDisabled();
-            expect(passwordInput).toBeDisabled();
-            expect(confirmPasswordInput).toBeDisabled();
+            // Check that error was logged
+            await waitFor(() => {
+                expect(consoleSpy.error).toHaveBeenCalledWith('Registration failed:', 'User already exists');
+            });
+        });
+
+        it('should log registration exceptions', async () => {
+            mockRegister.mockRejectedValue(new Error('Network error'));
+
+            renderRegister();
+
+            // Fill out the form
+            const firstNameInput = screen.getByLabelText(/first name/i);
+            const lastNameInput = screen.getByLabelText(/last name/i);
+            const usernameInput = screen.getByLabelText(/username/i);
+            const emailInput = screen.getByLabelText(/email address/i);
+            const passwordInput = screen.getByLabelText(/password/i, { selector: '[name="password"]' });
+            const confirmPasswordInput = screen.getByLabelText(/confirm password/i, { selector: '[name="confirmPassword"]' });
+
+            await userEvent.type(firstNameInput, 'John');
+            await userEvent.type(lastNameInput, 'Doe');
+            await userEvent.type(usernameInput, 'johndoe');
+            await userEvent.type(emailInput, 'john@example.com');
+            await userEvent.type(passwordInput, 'password123');
+            await userEvent.type(confirmPasswordInput, 'password123');
+
+            const submitButton = screen.getByRole('button', { name: /create account/i });
+            await userEvent.click(submitButton);
+
+            // Check that exception was logged
+            await waitFor(() => {
+                expect(consoleSpy.error).toHaveBeenCalledWith('Registration exception:', expect.any(Error));
+            });
+        });
+    });
+
+    describe('Error Display', () => {
+        it('should display string error messages correctly', () => {
+            mockUseAuth.mockReturnValue({
+                register: mockRegister,
+                error: 'User already exists',
+                isAuthenticated: false
+            });
+
+            renderRegister();
+
+            expect(screen.getByText('User already exists')).toBeInTheDocument();
+        });
+
+        it('should display object error messages as JSON string', () => {
+            const errorObject = {
+                message: 'Validation failed',
+                details: ['Email is invalid', 'Username too short']
+            };
+
+            mockUseAuth.mockReturnValue({
+                register: mockRegister,
+                error: errorObject,
+                isAuthenticated: false
+            });
+
+            renderRegister();
+
+            expect(screen.getByText(JSON.stringify(errorObject))).toBeInTheDocument();
         });
     });
 

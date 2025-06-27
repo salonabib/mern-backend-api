@@ -113,13 +113,22 @@ const Register = () => {
         setIsSubmitting(true);
 
         try {
-            const { confirmPassword, ...userData } = formData;
+            const { confirmPassword, password, ...userDataForLog } = formData;
+            // Log form data (excluding password)
+            console.log('Submitting registration:', userDataForLog);
+            const { confirmPassword: _, ...userData } = formData;
             const result = await register(userData);
+            // Log backend response
+            console.log('Registration response:', result);
             if (result.success) {
                 navigate('/');
+            } else {
+                // Log error details
+                console.error('Registration failed:', result.error);
             }
         } catch (err) {
-            console.error('Registration error:', err);
+            // Log caught exceptions
+            console.error('Registration exception:', err);
         } finally {
             setIsSubmitting(false);
         }
@@ -141,13 +150,13 @@ const Register = () => {
 
                     {error && (
                         <Alert severity="error" sx={{ mb: 3 }}>
-                            {error}
+                            {typeof error === 'string' ? error : JSON.stringify(error)}
                         </Alert>
                     )}
 
                     <Box component="form" onSubmit={handleSubmit} noValidate role="form">
                         <Grid container spacing={2}>
-                            <Grid xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     margin="normal"
                                     required
@@ -164,7 +173,7 @@ const Register = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     margin="normal"
                                     required

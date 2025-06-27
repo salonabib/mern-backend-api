@@ -158,14 +158,15 @@ const EditProfile = () => {
                     )}
 
                     <Box component="form" onSubmit={handleSubmit} noValidate>
-                        <Grid container spacing={3}>
-                            <Grid xs={12} sm={6}>
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
+                                    margin="normal"
                                     fullWidth
-                                    required
                                     id="firstName"
                                     label="First Name"
                                     name="firstName"
+                                    autoComplete="given-name"
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     error={!!errors.firstName}
@@ -173,13 +174,14 @@ const EditProfile = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
                                 <TextField
+                                    margin="normal"
                                     fullWidth
-                                    required
                                     id="lastName"
                                     label="Last Name"
                                     name="lastName"
+                                    autoComplete="family-name"
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     error={!!errors.lastName}
@@ -187,37 +189,38 @@ const EditProfile = () => {
                                     disabled={isSubmitting}
                                 />
                             </Grid>
-                            <Grid xs={12}>
-                                <TextField
-                                    fullWidth
-                                    id="avatar"
-                                    label="Avatar URL (optional)"
-                                    name="avatar"
-                                    value={formData.avatar}
-                                    onChange={handleChange}
-                                    error={!!errors.avatar}
-                                    helperText={errors.avatar || 'Enter a URL for your profile picture'}
-                                    disabled={isSubmitting}
-                                />
-                            </Grid>
-                            <Grid xs={12}>
-                                <TextField
-                                    fullWidth
-                                    id="bio"
-                                    label="Bio (optional)"
-                                    name="bio"
-                                    multiline
-                                    rows={4}
-                                    value={formData.bio}
-                                    onChange={handleChange}
-                                    error={!!errors.bio}
-                                    helperText={
-                                        errors.bio ||
-                                        `${formData.bio.length}/500 characters`
-                                    }
-                                    disabled={isSubmitting}
-                                />
-                            </Grid>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                margin="normal"
+                                fullWidth
+                                id="bio"
+                                label="Bio"
+                                name="bio"
+                                multiline
+                                rows={4}
+                                value={formData.bio}
+                                onChange={handleChange}
+                                error={!!errors.bio}
+                                helperText={errors.bio}
+                                disabled={isSubmitting}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                margin="normal"
+                                fullWidth
+                                id="avatar"
+                                label="Avatar URL"
+                                name="avatar"
+                                value={formData.avatar}
+                                onChange={handleChange}
+                                error={!!errors.avatar}
+                                helperText={errors.avatar}
+                                disabled={isSubmitting}
+                            />
                         </Grid>
 
                         <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>

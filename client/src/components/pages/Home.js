@@ -55,7 +55,7 @@ const Home = () => {
                 </Box>
 
                 <Grid container spacing={4}>
-                    <Grid xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h5" component="h2" gutterBottom>
@@ -94,7 +94,7 @@ const Home = () => {
                         </Card>
                     </Grid>
 
-                    <Grid xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h5" component="h2" gutterBottom>
@@ -133,7 +133,7 @@ const Home = () => {
                     </Typography>
                     <Grid container spacing={4} sx={{ mt: 2 }}>
                         {features.map((feature, index) => (
-                            <Grid xs={12} md={4} key={index}>
+                            <Grid size={{ xs: 12, md: 4 }} key={index}>
                                 <Card sx={{ height: '100%', textAlign: 'center' }}>
                                     <CardContent>
                                         <Box sx={{ color: 'primary.main', mb: 2 }}>
@@ -196,7 +196,7 @@ const Home = () => {
                 </Typography>
                 <Grid container spacing={4} sx={{ mt: 2 }}>
                     {features.map((feature, index) => (
-                        <Grid xs={12} md={4} key={index}>
+                        <Grid size={{ xs: 12, md: 4 }} key={index}>
                             <Box sx={{ textAlign: 'center' }}>
                                 <Box sx={{ color: 'primary.main', mb: 2 }}>
                                     {feature.icon}

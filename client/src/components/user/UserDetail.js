@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import { ArrowBack, Edit } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import LoadingSpinner from '../common/LoadingSpinner';
 
 const UserDetail = () => {
     const { id } = useParams();

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Card,
     CardContent,
@@ -131,10 +132,36 @@ const UserSuggestions = () => {
                                         {user.firstName?.charAt(0)}
                                     </Avatar>
                                     <Box sx={{ flex: 1 }}>
-                                        <Typography variant="subtitle1" fontWeight="medium">
+                                        <Typography
+                                            variant="subtitle1"
+                                            fontWeight="medium"
+                                            component={RouterLink}
+                                            to={`/users/${user._id}`}
+                                            sx={{
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                                '&:hover': {
+                                                    color: 'primary.main',
+                                                    textDecoration: 'underline'
+                                                }
+                                            }}
+                                        >
                                             {user.firstName} {user.lastName}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            component={RouterLink}
+                                            to={`/users/${user._id}`}
+                                            sx={{
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                                '&:hover': {
+                                                    color: 'primary.main',
+                                                    textDecoration: 'underline'
+                                                }
+                                            }}
+                                        >
                                             @{user.username}
                                         </Typography>
                                     </Box>

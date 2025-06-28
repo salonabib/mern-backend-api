@@ -19,6 +19,7 @@ const mockUser = {
     firstName: 'John',
     lastName: 'Doe',
     username: 'johndoe',
+    email: 'john@example.com',
 };
 
 const mockPostAuthor = {
@@ -153,6 +154,14 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={mockPost} />);
 
             expect(screen.queryByRole('button', { name: /delete post/i })).not.toBeInTheDocument();
+        });
+
+        it('should render the username as a clickable link to the user profile', () => {
+            renderWithProviders(<Post post={mockPost} />);
+            const links = screen.getAllByRole('link');
+            const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@janesmith'));
+            expect(usernameLink).toBeDefined();
+            expect(usernameLink).toHaveAttribute('href', '/users/author123');
         });
     });
 

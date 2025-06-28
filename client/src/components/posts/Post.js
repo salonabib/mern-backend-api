@@ -23,6 +23,7 @@ import {
     Delete,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Post = ({ post, onPostUpdated, onPostDeleted }) => {
     const { user, api } = useAuth();
@@ -164,7 +165,17 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                             {post.postedBy?.firstName} {post.postedBy?.lastName}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            @{post.postedBy?.username} • {formatDate(post.createdAt)}
+                            <span>
+                                <span style={{ display: 'inline' }}>
+                                    <RouterLink
+                                        to={`/users/${post.postedBy?._id}`}
+                                        style={{ textDecoration: 'none', color: 'inherit' }}
+                                    >
+                                        @{post.postedBy?.username}
+                                    </RouterLink>
+                                </span>
+                                {' '}• {formatDate(post.createdAt)}
+                            </span>
                         </Typography>
                     </Box>
                     {isAuthor && (

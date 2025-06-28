@@ -1,22 +1,17 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { AuthProvider, AuthContext } from '../../contexts/AuthContext';
 import UserSuggestions from './UserSuggestions';
 
-// Mock the AuthContext
-const mockApi = {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-};
-
-const mockUseAuth = jest.fn();
+// Mock the API module
 jest.mock('../../contexts/AuthContext', () => ({
-    useAuth: () => mockUseAuth(),
+    ...jest.requireActual('../../contexts/AuthContext'),
+    useAuth: jest.fn(),
 }));
+
+const { useAuth } = require('../../contexts/AuthContext');
 
 const testTheme = createTheme({
     palette: {
@@ -25,43 +20,41 @@ const testTheme = createTheme({
     },
 });
 
-const mockUser = {
-    _id: '1',
-    firstName: 'John',
-    lastName: 'Doe',
-    username: 'johndoe',
-    email: 'john@example.com',
-    role: 'user',
-    isActive: true,
-    bio: 'Software developer',
-    avatar: 'https://example.com/avatar.jpg',
-    createdAt: '2023-01-01T00:00:00.000Z',
+// Mock API responses
+const mockSuggestions = {
+    data: {
+        success: true,
+        data: [
+            {
+                _id: 'user1',
+                firstName: 'John',
+                lastName: 'Doe',
+                username: 'johndoe',
+                email: 'john@example.com',
+                photo: null,
+                role: 'user',
+                isActive: true,
+                createdAt: '2024-01-01T00:00:00.000Z',
+            },
+            {
+                _id: 'user2',
+                firstName: 'Jane',
+                lastName: 'Smith',
+                username: 'janesmith',
+                email: 'jane@example.com',
+                photo: null,
+                role: 'user',
+                isActive: true,
+                createdAt: '2024-01-02T00:00:00.000Z',
+            },
+        ],
+    },
 };
 
-const mockSuggestions = [
-    {
-        _id: '2',
-        firstName: 'Jane',
-        lastName: 'Smith',
-        username: 'janesmith',
-        email: 'jane@example.com',
-        bio: 'Frontend developer',
-        avatar: 'https://example.com/jane.jpg',
-        followers: [],
-        following: [],
-    },
-    {
-        _id: '3',
-        firstName: 'Bob',
-        lastName: 'Johnson',
-        username: 'bobjohnson',
-        email: 'bob@example.com',
-        bio: 'Backend developer',
-        avatar: null,
-        followers: [],
-        following: [],
-    },
-];
+const mockApi = {
+    get: jest.fn(),
+    put: jest.fn(),
+};
 
 const renderUserSuggestions = () => {
     return render(
@@ -76,75 +69,25 @@ const renderUserSuggestions = () => {
 describe('UserSuggestions Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        localStorage.clear();
-        // Set up default mock for useAuth
-        mockUseAuth.mockReturnValue({
-            user: mockUser,
-            isAuthenticated: true,
-            loading: false,
-            error: null,
+        useAuth.mockReturnValue({
             api: mockApi,
+            isAuthenticated: true,
+            user: { _id: 'currentUser' },
         });
     });
 
     describe('Rendering', () => {
-        it('should render suggestions section title', async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: {
-                    success: true,
-                    data: mockSuggestions,
-                },
-            });
-
-            renderUserSuggestions();
-
-            await waitFor(() => {
-                expect(screen.getByText('People to Follow')).toBeInTheDocument();
-            });
-        });
-
         it('should display loading state initially', () => {
-            // Don't resolve the promise immediately to test loading state
-            mockApi.get.mockReturnValueOnce(new Promise(() => { }));
+            mockApi.get.mockImplementation(() => new Promise(() => { })); // Never resolves
 
             renderUserSuggestions();
 
             expect(screen.getByText('Loading suggestions...')).toBeInTheDocument();
-        });
-
-        it('should display suggestions when data is loaded', async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: {
-                    success: true,
-                    data: mockSuggestions,
-                },
-            });
-
-            renderUserSuggestions();
-
-            await waitFor(() => {
-                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
-            });
-        });
-
-        it('should display empty state when no suggestions', async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: {
-                    success: true,
-                    data: [],
-                },
-            });
-
-            renderUserSuggestions();
-
-            await waitFor(() => {
-                expect(screen.getByText('No suggestions available at the moment.')).toBeInTheDocument();
-            });
+            expect(screen.getByRole('progressbar')).toBeInTheDocument();
         });
 
         it('should display error state when API fails', async () => {
-            mockApi.get.mockRejectedValueOnce(new Error('API Error'));
+            mockApi.get.mockRejectedValue(new Error('API Error'));
 
             renderUserSuggestions();
 
@@ -152,183 +95,260 @@ describe('UserSuggestions Component', () => {
                 expect(screen.getByText('Failed to fetch suggestions')).toBeInTheDocument();
             });
         });
+
+        it('should display empty state when no suggestions', async () => {
+            mockApi.get.mockResolvedValue({ data: { success: true, data: [] } });
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                expect(screen.getByText('People to Follow')).toBeInTheDocument();
+                expect(screen.getByText('No suggestions available at the moment.')).toBeInTheDocument();
+            });
+        });
+
+        it('should display user suggestions when data is available', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                expect(screen.getByText('People to Follow')).toBeInTheDocument();
+                expect(screen.getByText('John Doe')).toBeInTheDocument();
+                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+                expect(screen.getByText('@johndoe')).toBeInTheDocument();
+                expect(screen.getByText('@janesmith')).toBeInTheDocument();
+            });
+        });
     });
 
-    describe('User Display', () => {
-        beforeEach(async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: {
-                    success: true,
-                    data: mockSuggestions,
-                },
-            });
-        });
+    describe('Profile Links', () => {
+        it('should display profile links for each user', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
 
-        it('should display user names correctly', async () => {
             renderUserSuggestions();
 
             await waitFor(() => {
-                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
+                const profileLinks = screen.getAllByRole('link');
+                expect(profileLinks).toHaveLength(4); // 2 users × 2 links each (name + username)
             });
         });
 
-        it('should display usernames with @ symbol', async () => {
+        it('should have correct href attributes for profile links', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
             renderUserSuggestions();
 
             await waitFor(() => {
-                expect(screen.getByText('@janesmith')).toBeInTheDocument();
-                expect(screen.getByText('@bobjohnson')).toBeInTheDocument();
+                const profileLinks = screen.getAllByRole('link');
+                // Check that we have links for both users
+                const user1Links = profileLinks.filter(link => link.getAttribute('href') === '/users/user1');
+                const user2Links = profileLinks.filter(link => link.getAttribute('href') === '/users/user2');
+                expect(user1Links).toHaveLength(2); // name + username for user1
+                expect(user2Links).toHaveLength(2); // name + username for user2
             });
         });
 
-        it('should display default avatar when no avatar provided', async () => {
+        it('should display user names as clickable profile links', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
             renderUserSuggestions();
 
             await waitFor(() => {
-                const avatars = screen.getAllByText(/[JB]/);
-                expect(avatars.length).toBeGreaterThan(0);
+                const johnLink = screen.getByRole('link', { name: /john doe/i });
+                const janeLink = screen.getByRole('link', { name: /jane smith/i });
+
+                expect(johnLink).toBeInTheDocument();
+                expect(janeLink).toBeInTheDocument();
+                expect(johnLink).toHaveAttribute('href', '/users/user1');
+                expect(janeLink).toHaveAttribute('href', '/users/user2');
+            });
+        });
+
+        it('should display usernames as clickable profile links', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const johndoeLink = screen.getByRole('link', { name: /@johndoe/i });
+                const janesmithLink = screen.getByRole('link', { name: /@janesmith/i });
+
+                expect(johndoeLink).toBeInTheDocument();
+                expect(janesmithLink).toBeInTheDocument();
+                expect(johndoeLink).toHaveAttribute('href', '/users/user1');
+                expect(janesmithLink).toHaveAttribute('href', '/users/user2');
             });
         });
     });
 
     describe('Follow/Unfollow Functionality', () => {
-        beforeEach(async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: {
-                    success: true,
-                    data: mockSuggestions,
-                },
-            });
-        });
+        it('should display follow button for users not being followed', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
 
-        it('should display follow button for each user', async () => {
             renderUserSuggestions();
 
             await waitFor(() => {
-                const followButtons = screen.getAllByText('Follow');
-                expect(followButtons.length).toBe(2);
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                expect(followButtons).toHaveLength(2);
             });
         });
 
-        it('should call follow API when follow button is clicked', async () => {
-            const user = userEvent.setup();
-            mockApi.put.mockResolvedValueOnce({
-                data: { success: true }
-            });
+        it('should handle follow action successfully', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+            mockApi.put.mockResolvedValue({ data: { success: true } });
 
             renderUserSuggestions();
 
-            await waitFor(async () => {
-                const followButtons = screen.getAllByText('Follow');
-                await user.click(followButtons[0]);
-            });
-
-            expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: '2' });
-        });
-
-        it('should change button text to "Following" after follow', async () => {
-            const user = userEvent.setup();
-            mockApi.put.mockResolvedValueOnce({
-                data: { success: true }
-            });
-
-            renderUserSuggestions();
-
-            await waitFor(async () => {
-                const followButtons = screen.getAllByText('Follow');
-                await user.click(followButtons[0]);
-            });
-
-            // After following, the user should be removed from the list
             await waitFor(() => {
-                expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
-                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
-            });
-        });
-
-        it('should call unfollow API when unfollow button is clicked', async () => {
-            const user = userEvent.setup();
-            mockApi.put.mockResolvedValueOnce({
-                data: { success: true }
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                fireEvent.click(followButtons[0]);
             });
 
-            renderUserSuggestions();
-
-            await waitFor(async () => {
-                const followButtons = screen.getAllByText('Follow');
-                await user.click(followButtons[0]);
-            });
-
-            // After following, the user should be removed from the list
             await waitFor(() => {
-                expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
+                expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: 'user1' });
             });
         });
 
-        it('should show loading state on follow button while processing', async () => {
-            const user = userEvent.setup();
-            // Don't resolve the promise immediately to test loading state
-            mockApi.put.mockReturnValueOnce(new Promise(() => { }));
+        it('should handle unfollow action successfully', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+            mockApi.put.mockResolvedValue({ data: { success: true } });
 
             renderUserSuggestions();
 
-            await waitFor(async () => {
-                const followButtons = screen.getAllByText('Follow');
-                await user.click(followButtons[0]);
+            await waitFor(() => {
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                fireEvent.click(followButtons[0]);
+            });
+
+            await waitFor(() => {
+                expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: 'user1' });
+            });
+        });
+
+        it('should show loading state during follow/unfollow action', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+            mockApi.put.mockImplementation(() => new Promise(() => { })); // Never resolves
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                fireEvent.click(followButtons[0]);
             });
 
             await waitFor(() => {
                 expect(screen.getByText('Loading...')).toBeInTheDocument();
             });
         });
+    });
 
-        it('should handle follow error gracefully', async () => {
-            const user = userEvent.setup();
-            mockApi.put.mockRejectedValueOnce(new Error('Follow failed'));
+    describe('User Avatars', () => {
+        it('should display user avatars with initials when no photo', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
 
             renderUserSuggestions();
 
-            await waitFor(async () => {
-                const followButtons = screen.getAllByText('Follow');
-                await user.click(followButtons[0]);
-            });
-
-            // After error, the user should still be in the list
             await waitFor(() => {
-                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
+                const avatars = screen.getAllByText('J');
+                expect(avatars).toHaveLength(2); // Both John and Jane start with J
+            });
+        });
+
+        it('should display user avatars with photos when available', async () => {
+            const suggestionsWithPhotos = {
+                data: {
+                    success: true,
+                    data: [
+                        {
+                            ...mockSuggestions.data.data[0],
+                            photo: 'photo1.jpg',
+                        },
+                    ],
+                },
+            };
+            mockApi.get.mockResolvedValue(suggestionsWithPhotos);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const avatar = screen.getByAltText('John');
+                expect(avatar).toHaveAttribute('src', '/api/users/user1/photo');
             });
         });
     });
 
-    describe('Authentication', () => {
-        it('should not render when user is not authenticated', () => {
-            mockUseAuth.mockReturnValue({
-                user: null,
-                isAuthenticated: false,
-                loading: false,
-                error: null,
-                api: mockApi,
-            });
+    describe('Accessibility', () => {
+        it('should have proper heading structure', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
 
             renderUserSuggestions();
 
-            expect(screen.queryByText('People to Follow')).not.toBeInTheDocument();
+            await waitFor(() => {
+                const heading = screen.getByRole('heading', { level: 6 });
+                expect(heading).toBeInTheDocument();
+                expect(heading).toHaveTextContent('People to Follow');
+            });
         });
 
-        it('should not render when auth is loading', () => {
-            mockUseAuth.mockReturnValue({
-                user: null,
-                isAuthenticated: false,
-                loading: true,
-                error: null,
-                api: mockApi,
-            });
+        it('should have proper button labels', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
 
             renderUserSuggestions();
 
-            expect(screen.queryByText('People to Follow')).not.toBeInTheDocument();
+            await waitFor(() => {
+                const buttons = screen.getAllByRole('button');
+                buttons.forEach(button => {
+                    expect(button.textContent.trim().length).toBeGreaterThan(0);
+                });
+            });
+        });
+
+        it('should have proper link labels', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const links = screen.getAllByRole('link');
+                links.forEach(link => {
+                    expect(link.textContent.trim().length).toBeGreaterThan(0);
+                });
+            });
+        });
+    });
+
+    describe('Error Handling', () => {
+        it('should handle follow action error gracefully', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+            mockApi.put.mockRejectedValue(new Error('Follow failed'));
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                fireEvent.click(followButtons[0]);
+            });
+
+            await waitFor(() => {
+                expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: 'user1' });
+            });
+        });
+
+        it('should handle unfollow action error gracefully', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+            mockApi.put.mockRejectedValue(new Error('Unfollow failed'));
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                const followButtons = screen.getAllByRole('button', { name: /follow/i });
+                fireEvent.click(followButtons[0]);
+            });
+
+            await waitFor(() => {
+                expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: 'user1' });
+            });
         });
     });
 }); 

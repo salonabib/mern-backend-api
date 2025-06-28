@@ -12,6 +12,7 @@ import UserList from './components/user/UserList';
 import UserDetail from './components/user/UserDetail';
 import EditProfile from './components/user/EditProfile';
 import Newsfeed from './components/posts/Newsfeed';
+import CreatePost from './components/posts/CreatePost';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Create theme
@@ -69,6 +70,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Newsfeed />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/create-post"
+                  element={
+                    <ProtectedRoute>
+                      <CreatePost />
                     </ProtectedRoute>
                   }
                 />

@@ -135,7 +135,21 @@ const UserDetail = () => {
                             <Typography variant="h3" component="h2" gutterBottom>
                                 {user.firstName} {user.lastName}
                             </Typography>
-                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                            <Typography
+                                variant="h6"
+                                color="text.secondary"
+                                gutterBottom
+                                component={RouterLink}
+                                to={`/users/${user._id}`}
+                                sx={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    '&:hover': {
+                                        color: 'primary.main',
+                                        textDecoration: 'underline'
+                                    }
+                                }}
+                            >
                                 @{user.username}
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>

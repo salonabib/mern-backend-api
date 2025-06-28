@@ -14,6 +14,7 @@ import { Refresh, Add } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import CreatePost from './CreatePost';
 import Post from './Post';
+import { Link as RouterLink } from 'react-router-dom';
 
 const UserPosts = ({ userId, userInfo }) => {
     const { user: currentUser, api } = useAuth();
@@ -100,7 +101,21 @@ const UserPosts = ({ userId, userInfo }) => {
                                     <Typography variant="h4" component="h1" gutterBottom>
                                         {userInfo?.firstName} {userInfo?.lastName}
                                     </Typography>
-                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    <Typography
+                                        variant="h6"
+                                        color="text.secondary"
+                                        gutterBottom
+                                        component={RouterLink}
+                                        to={`/users/${userInfo?._id}`}
+                                        sx={{
+                                            textDecoration: 'none',
+                                            color: 'inherit',
+                                            '&:hover': {
+                                                color: 'primary.main',
+                                                textDecoration: 'underline'
+                                            }
+                                        }}
+                                    >
                                         @{userInfo?.username}
                                     </Typography>
                                     {userInfo?.about && (

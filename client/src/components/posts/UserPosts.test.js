@@ -207,6 +207,31 @@ describe('UserPosts Component', () => {
                 expect(screen.getByText('J')).toBeInTheDocument();
             });
         });
+
+        it('should render the username as a clickable link to the user profile', async () => {
+            const userInfo = {
+                _id: 'user456',
+                firstName: 'Jane',
+                lastName: 'Smith',
+                username: 'janesmith',
+                photo: null,
+            };
+            mockApi.get.mockResolvedValue({
+                data: {
+                    success: true,
+                    data: mockPosts,
+                },
+            });
+
+            renderWithProviders(<UserPosts userId="user456" userInfo={userInfo} />);
+
+            await waitFor(() => {
+                const links = screen.getAllByRole('link');
+                const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@janesmith'));
+                expect(usernameLink).toBeDefined();
+                expect(usernameLink).toHaveAttribute('href', '/users/user456');
+            });
+        });
     });
 
     describe('Data Fetching', () => {

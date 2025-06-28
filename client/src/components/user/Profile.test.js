@@ -4,10 +4,12 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Profile from './Profile';
+import { AuthProvider } from '../../contexts/AuthContext';
 
 // Mock the AuthContext
 const mockUseAuth = jest.fn();
 jest.mock('../../contexts/AuthContext', () => ({
+    ...jest.requireActual('../../contexts/AuthContext'),
     useAuth: () => mockUseAuth(),
 }));
 
@@ -43,7 +45,9 @@ const renderProfile = () => {
     return render(
         <ThemeProvider theme={testTheme}>
             <BrowserRouter>
-                <Profile />
+                <AuthProvider>
+                    <Profile />
+                </AuthProvider>
             </BrowserRouter>
         </ThemeProvider>
     );
@@ -53,6 +57,12 @@ describe('Profile Component', () => {
     beforeEach(() => {
         localStorage.clear();
         jest.clearAllMocks();
+        mockUseAuth.mockReturnValue({
+            user: mockUser,
+            isAuthenticated: true,
+            loading: false,
+            error: null,
+        });
     });
 
     describe('Rendering', () => {
@@ -481,6 +491,16 @@ describe('Profile Component', () => {
             const containers = screen.getAllByText('John Doe');
             const container = containers[0].closest('[class*="MuiContainer"]');
             expect(container).toBeInTheDocument();
+        });
+    });
+
+    it('should render the username as a clickable link to the user profile', async () => {
+        renderProfile();
+        await waitFor(() => {
+            const links = screen.getAllByRole('link');
+            const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@johndoe'));
+            expect(usernameLink).toBeDefined();
+            expect(usernameLink).toHaveAttribute('href', '/users/1');
         });
     });
 }); 

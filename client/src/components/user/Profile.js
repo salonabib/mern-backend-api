@@ -52,7 +52,21 @@ const Profile = () => {
                                     <Typography variant="h3" component="h1" gutterBottom>
                                         {user.firstName} {user.lastName}
                                     </Typography>
-                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    <Typography
+                                        variant="h6"
+                                        color="text.secondary"
+                                        gutterBottom
+                                        component={RouterLink}
+                                        to={`/users/${user._id}`}
+                                        sx={{
+                                            textDecoration: 'none',
+                                            color: 'inherit',
+                                            '&:hover': {
+                                                color: 'primary.main',
+                                                textDecoration: 'underline'
+                                            }
+                                        }}
+                                    >
                                         @{user.username}
                                     </Typography>
                                     <Chip
@@ -97,7 +111,21 @@ const Profile = () => {
                                                     <Typography variant="h4" gutterBottom>
                                                         {user?.firstName} {user?.lastName}
                                                     </Typography>
-                                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color="text.secondary"
+                                                        gutterBottom
+                                                        component={RouterLink}
+                                                        to={`/users/${user._id}`}
+                                                        sx={{
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            '&:hover': {
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline'
+                                                            }
+                                                        }}
+                                                    >
                                                         @{user?.username}
                                                     </Typography>
                                                     <Typography color="text.secondary">

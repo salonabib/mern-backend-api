@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { PhotoCamera, Send, Clear } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { Link as RouterLink } from 'react-router-dom';
 
 const CreatePost = ({ onPostCreated }) => {
     const { user, api } = useAuth();
@@ -131,7 +132,20 @@ const CreatePost = ({ onPostCreated }) => {
                         <Typography variant="subtitle1" fontWeight="medium">
                             {user?.firstName} {user?.lastName}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            component={RouterLink}
+                            to={`/users/${user?._id}`}
+                            sx={{
+                                textDecoration: 'none',
+                                color: 'inherit',
+                                '&:hover': {
+                                    color: 'primary.main',
+                                    textDecoration: 'underline'
+                                }
+                            }}
+                        >
                             @{user?.username}
                         </Typography>
                     </Box>

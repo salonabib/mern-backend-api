@@ -405,7 +405,19 @@ const Home = () => {
                                                 <Typography variant="h6">
                                                     {user?.firstName} {user?.lastName}
                                                 </Typography>
-                                                <Typography color="text.secondary">
+                                                <Typography
+                                                    color="text.secondary"
+                                                    component={RouterLink}
+                                                    to={`/users/${user?._id}`}
+                                                    sx={{
+                                                        textDecoration: 'none',
+                                                        color: 'inherit',
+                                                        '&:hover': {
+                                                            color: 'primary.main',
+                                                            textDecoration: 'underline'
+                                                        }
+                                                    }}
+                                                >
                                                     @{user?.username}
                                                 </Typography>
                                                 <Typography color="text.secondary" variant="body2">

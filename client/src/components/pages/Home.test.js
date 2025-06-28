@@ -455,6 +455,27 @@ describe('Home Component', () => {
                 expect(screen.getByText('No recent activity. Start by creating your first post!')).toBeInTheDocument();
             });
         });
+
+        it('should render the username in the profile card as a clickable link to the user profile', async () => {
+            mockApi.get
+                .mockResolvedValueOnce(mockUserStats)
+                .mockResolvedValueOnce(mockRecentActivity);
+
+            render(
+                <ThemeProvider theme={testTheme}>
+                    <BrowserRouter>
+                        <Home />
+                    </BrowserRouter>
+                </ThemeProvider>
+            );
+
+            await waitFor(() => {
+                const links = screen.getAllByRole('link');
+                const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@johndoe'));
+                expect(usernameLink).toBeDefined();
+                expect(usernameLink).toHaveAttribute('href', '/users/1');
+            });
+        });
     });
 
     describe('Admin User View', () => {

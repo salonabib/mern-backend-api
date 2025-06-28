@@ -50,7 +50,7 @@ const Profile = () => {
                                 </Avatar>
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Typography variant="h3" component="h1" gutterBottom>
-                                        User ID: {user._id}
+                                        {user.name}
                                     </Typography>
                                     <Typography
                                         variant="h6"

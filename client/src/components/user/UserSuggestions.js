@@ -158,7 +158,7 @@ const UserSuggestions = () => {
                                                 }
                                             }}
                                         >
-                                            User ID: {user._id}
+                                            {user.name}
                                         </Typography>
                                         <Typography
                                             variant="body2"

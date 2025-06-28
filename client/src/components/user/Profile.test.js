@@ -31,6 +31,7 @@ const mockUser = {
     _id: '1',
     firstName: 'John',
     lastName: 'Doe',
+    name: 'John Doe',
     username: 'johndoe',
     email: 'john@example.com',
     role: 'user',

@@ -18,6 +18,7 @@ const mockUser = {
     _id: 'user1',
     firstName: 'John',
     lastName: 'Doe',
+    name: 'John Doe',
     username: 'johndoe',
     email: 'john@example.com',
 };
@@ -26,6 +27,7 @@ const mockPostAuthor = {
     _id: 'author123',
     firstName: 'Jane',
     lastName: 'Smith',
+    name: 'Jane Smith',
     username: 'janesmith',
     photo: null,
 };
@@ -902,9 +904,9 @@ describe('Post Component', () => {
             const postWithPhoto = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
-                    photo: 'fake-photo-data'
-                }
+                    ...mockPostAuthor,
+                    photo: 'fake-photo-data',
+                },
             };
 
             renderWithProviders(<Post post={postWithPhoto} />);
@@ -912,14 +914,14 @@ describe('Post Component', () => {
             const avatar = screen.getByTestId('post-author-avatar');
             const img = avatar.querySelector('img');
             expect(img).toBeInTheDocument();
-            expect(img.src).toContain(`/api/users/${mockPost.postedBy._id}/photo`);
+            expect(img.src).toContain(`/api/users/${mockPostAuthor._id}/photo`);
         });
 
         it('should display fallback avatar with initials when no photo available', () => {
             const postWithoutPhoto = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
+                    ...mockPostAuthor,
                     photo: null
                 }
             };
@@ -936,7 +938,7 @@ describe('Post Component', () => {
             const postWithEmptyPhoto = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
+                    ...mockPostAuthor,
                     photo: ''
                 }
             };
@@ -953,11 +955,8 @@ describe('Post Component', () => {
             const postWithoutPhotoProperty = {
                 ...mockPost,
                 postedBy: {
-                    _id: 'user123',
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    username: 'johndoe'
-                    // photo property is missing
+                    ...mockPostAuthor,
+                    photo: null
                 }
             };
 
@@ -973,26 +972,26 @@ describe('Post Component', () => {
             const postWithoutFirstName = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
+                    ...mockPostAuthor,
                     firstName: null,
-                    lastName: 'Doe'
+                    lastName: 'Smith'
                 }
             };
 
             renderWithProviders(<Post post={postWithoutFirstName} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            expect(avatar).toHaveTextContent('D'); // First letter of lastName
+            expect(avatar).toHaveTextContent('S'); // First letter of lastName
         });
 
         it('should display fallback avatar when both firstName and lastName are missing', () => {
             const postWithoutNames = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
+                    ...mockPostAuthor,
                     firstName: null,
                     lastName: null,
-                    username: 'johndoe'
+                    username: 'janesmith'
                 }
             };
 
@@ -1006,8 +1005,10 @@ describe('Post Component', () => {
             const postWithoutAnyNames = {
                 ...mockPost,
                 postedBy: {
-                    _id: 'user123'
-                    // All name properties are missing
+                    ...mockPostAuthor,
+                    firstName: null,
+                    lastName: null,
+                    username: 'janesmith'
                 }
             };
 
@@ -1022,22 +1023,24 @@ describe('Post Component', () => {
             const postWithPhoto = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
-                    photo: 'fake-photo-data'
-                }
+                    ...mockPostAuthor,
+                    photo: 'fake-photo-data',
+                },
             };
+
             renderWithProviders(<Post post={postWithPhoto} />);
+
             const avatar = screen.getByTestId('post-author-avatar');
             const img = avatar.querySelector('img');
             expect(img).toBeInTheDocument();
-            expect(img).toHaveAttribute('alt', 'Jane');
+            expect(img).toHaveAttribute('alt', 'Jane Smith');
         });
 
         it('should not have alt attribute on root avatar for fallback (no image)', () => {
             const postWithoutPhoto = {
                 ...mockPost,
                 postedBy: {
-                    ...mockPost.postedBy,
+                    ...mockPostAuthor,
                     photo: null
                 }
             };

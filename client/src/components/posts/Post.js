@@ -164,7 +164,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                     </Avatar>
                     <Box sx={{ flexGrow: 1 }}>
                         <Typography variant="subtitle1" fontWeight="medium">
-                            User ID: {post.postedBy?._id}
+                            {post.postedBy?.name || `${post.postedBy?.firstName} ${post.postedBy?.lastName}`}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                             <Typography
@@ -331,7 +331,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                                         <Box sx={{ flexGrow: 1 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                                 <Typography variant="subtitle2" fontWeight="medium">
-                                                    User ID: {comment.postedBy?._id}
+                                                    {comment.postedBy?.name || `${comment.postedBy?.firstName} ${comment.postedBy?.lastName}`}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     {formatDate(comment.createdAt)}

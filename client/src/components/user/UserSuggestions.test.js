@@ -29,6 +29,7 @@ const mockSuggestions = {
                 _id: 'user1',
                 firstName: 'John',
                 lastName: 'Doe',
+                name: 'John Doe',
                 username: 'johndoe',
                 email: 'john@example.com',
                 photo: null,
@@ -41,6 +42,7 @@ const mockSuggestions = {
                 _id: 'user2',
                 firstName: 'Jane',
                 lastName: 'Smith',
+                name: 'Jane Smith',
                 username: 'janesmith',
                 email: 'jane@example.com',
                 photo: null,
@@ -266,17 +268,18 @@ describe('UserSuggestions Component', () => {
                     data: [
                         {
                             ...mockSuggestions.data.data[0],
-                            photo: 'photo1.jpg',
+                            photo: 'fake-photo-data',
                         },
                     ],
                 },
             };
+
             mockApi.get.mockResolvedValue(suggestionsWithPhotos);
 
             renderUserSuggestions();
 
             await waitFor(() => {
-                const avatar = screen.getByAltText('John');
+                const avatar = screen.getByAltText('John Doe');
                 expect(avatar).toHaveAttribute('src', '/api/users/user1/photo');
             });
         });

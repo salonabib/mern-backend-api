@@ -112,14 +112,14 @@ const UserConnections = ({ userId }) => {
                             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                                 <Avatar
                                     src={photoUrl}
-                                    alt={user.firstName}
+                                    alt={user.name}
                                     sx={{ width: 48, height: 48, mr: 2 }}
                                 >
-                                    {user.firstName?.charAt(0)}
+                                    {user.name?.charAt(0)}
                                 </Avatar>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="subtitle1" fontWeight="medium">
-                                        {user.firstName} {user.lastName}
+                                        {user.name}
                                     </Typography>
                                     <Typography
                                         variant="body2"

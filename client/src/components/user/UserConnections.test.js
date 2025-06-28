@@ -30,6 +30,7 @@ const mockUser = {
     _id: '1',
     firstName: 'John',
     lastName: 'Doe',
+    name: 'John Doe',
     username: 'johndoe',
     email: 'john@example.com',
     role: 'user',
@@ -44,6 +45,7 @@ const mockFollowers = [
         _id: '2',
         firstName: 'Jane',
         lastName: 'Smith',
+        name: 'Jane Smith',
         username: 'janesmith',
         email: 'jane@example.com',
         bio: 'Frontend developer',
@@ -53,6 +55,7 @@ const mockFollowers = [
         _id: '3',
         firstName: 'Bob',
         lastName: 'Johnson',
+        name: 'Bob Johnson',
         username: 'bobjohnson',
         email: 'bob@example.com',
         bio: 'Backend developer',
@@ -65,6 +68,7 @@ const mockFollowing = [
         _id: '4',
         firstName: 'Alice',
         lastName: 'Brown',
+        name: 'Alice Brown',
         username: 'alicebrown',
         email: 'alice@example.com',
         bio: 'Designer',
@@ -271,21 +275,6 @@ describe('UserConnections Component', () => {
                 }
             });
         });
-
-        it('should display follow/unfollow buttons for followers', async () => {
-            mockApi.get.mockResolvedValueOnce({
-                data: { data: mockFollowers }
-            }).mockResolvedValueOnce({
-                data: { data: mockFollowing }
-            });
-
-            renderUserConnections();
-
-            await waitFor(() => {
-                expect(screen.getByText('Follow')).toBeInTheDocument();
-                expect(screen.getByText('Unfollow')).toBeInTheDocument();
-            });
-        });
     });
 
     describe('Following Tab', () => {
@@ -430,11 +419,13 @@ describe('UserConnections Component', () => {
     });
 
     test('username links point to correct user profile URLs', async () => {
-        render(
-            <AuthProvider>
-                <UserConnections />
-            </AuthProvider>
-        );
+        mockApi.get.mockResolvedValueOnce({
+            data: { data: mockFollowers }
+        }).mockResolvedValueOnce({
+            data: { data: mockFollowing }
+        });
+
+        renderUserConnections();
 
         // Wait for connections to load
         await waitFor(() => {

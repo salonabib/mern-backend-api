@@ -168,7 +168,7 @@ const Home = () => {
                 <Fade in timeout={800}>
                     <Box sx={{ mt: 4, mb: 6 }}>
                         <Typography variant="h3" component="h1" gutterBottom align="center">
-                            Welcome back, {user?.firstName}! 👋
+                            Welcome back, {user?.name || user?.firstName}! 👋
                         </Typography>
                         <Typography variant="h6" color="text.secondary" align="center" paragraph>
                             Here's what's happening in your social world today.
@@ -290,15 +290,16 @@ const Home = () => {
                                                         <ListItemAvatar>
                                                             <Avatar
                                                                 src={post.postedBy?.photo ? `/api/users/${post.postedBy._id}/photo` : null}
-                                                                alt={post.postedBy?.firstName}
+                                                                alt={post.postedBy?.name}
+                                                                sx={{ width: 40, height: 40 }}
                                                             >
-                                                                {post.postedBy?.firstName?.charAt(0)}
+                                                                {post.postedBy?.name?.charAt(0)}
                                                             </Avatar>
                                                         </ListItemAvatar>
                                                         <ListItemText
                                                             primary={
                                                                 <Typography variant="subtitle2">
-                                                                    {post.postedBy?.firstName} {post.postedBy?.lastName}
+                                                                    {post.postedBy?.name}
                                                                 </Typography>
                                                             }
                                                             secondary={
@@ -395,15 +396,15 @@ const Home = () => {
                                         </Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                             <Avatar
-                                                src={photoUrl}
-                                                alt={user?.firstName}
+                                                src={user?.photo ? `/api/users/${user._id}/photo` : null}
+                                                alt={user?.name}
                                                 sx={{ width: 64, height: 64, mr: 2 }}
                                             >
-                                                {user?.firstName?.charAt(0)}
+                                                {user?.name?.charAt(0)}
                                             </Avatar>
                                             <Box>
                                                 <Typography variant="h6">
-                                                    {user?.firstName} {user?.lastName}
+                                                    {user?.name}
                                                 </Typography>
                                                 <Typography
                                                     color="text.secondary"

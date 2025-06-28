@@ -43,14 +43,14 @@ const Profile = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                                 <Avatar
                                     src={photoUrl}
-                                    alt={user.firstName}
+                                    alt={user.name}
                                     sx={{ width: 120, height: 120, mr: 3 }}
                                 >
-                                    {user.firstName?.charAt(0)}
+                                    {user.name?.charAt(0)}
                                 </Avatar>
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Typography variant="h3" component="h1" gutterBottom>
-                                        {user.firstName} {user.lastName}
+                                        User ID: {user._id}
                                     </Typography>
                                     <Typography
                                         variant="h6"
@@ -102,14 +102,14 @@ const Profile = () => {
                                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                                                 <Avatar
                                                     src={photoUrl}
-                                                    alt={user?.firstName}
+                                                    alt={user?.name}
                                                     sx={{ width: 80, height: 80, mr: 3 }}
                                                 >
-                                                    {user?.firstName?.charAt(0)}
+                                                    {user?.name?.charAt(0)}
                                                 </Avatar>
                                                 <Box>
                                                     <Typography variant="h4" gutterBottom>
-                                                        {user?.firstName} {user?.lastName}
+                                                        {user?.name}
                                                     </Typography>
                                                     <Typography
                                                         variant="h6"

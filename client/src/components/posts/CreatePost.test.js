@@ -18,6 +18,7 @@ const mockUser = {
     _id: 'user123',
     firstName: 'John',
     lastName: 'Doe',
+    name: 'John Doe',
     username: 'johndoe',
     photo: null,
 };
@@ -73,14 +74,14 @@ describe('CreatePost Component', () => {
 
             renderWithProviders(<CreatePost />);
 
-            const avatar = screen.getByAltText('John');
+            const avatar = screen.getByAltText('John Doe');
             expect(avatar).toHaveAttribute('src', '/api/users/user123/photo');
         });
 
         it('should display user avatar with initials when no photo', () => {
             renderWithProviders(<CreatePost />);
 
-            const avatar = screen.getByAltText('John');
+            const avatar = screen.getByAltText('John Doe');
             expect(avatar).toBeInTheDocument();
         });
 
@@ -116,6 +117,13 @@ describe('CreatePost Component', () => {
 
             const usernameLink = screen.getByText('@johndoe').closest('a');
             expect(usernameLink).toHaveAttribute('href', '/users/user123');
+        });
+
+        it('should display user avatar', () => {
+            renderWithProviders(<CreatePost />);
+
+            const avatar = screen.getByAltText('John Doe');
+            expect(avatar).toBeInTheDocument();
         });
     });
 

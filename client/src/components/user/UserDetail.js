@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Edit } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
 
 const UserDetail = () => {
     const { id } = useParams();
@@ -29,26 +30,16 @@ const UserDetail = () => {
         const fetchUser = async () => {
             try {
                 setLoading(true);
-                // This would be replaced with actual API call
-                // const response = await api.get(`/users/${id}`);
-                // setUser(response.data.user);
-
-                // Mock data for now
-                setUser({
-                    _id: id,
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    username: 'johndoe',
-                    email: 'john@example.com',
-                    role: 'user',
-                    isActive: true,
-                    avatar: '',
-                    bio: 'This is a sample bio for the user.',
-                    createdAt: '2024-01-01T00:00:00.000Z',
-                    updatedAt: '2024-01-01T00:00:00.000Z',
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`/api/users/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
+                setUser(response.data.data);
             } catch (err) {
-                setError(err.message);
+                console.error('Error fetching user:', err);
+                setError(err.response?.data?.message || 'Failed to fetch user data');
             } finally {
                 setLoading(false);
             }
@@ -126,14 +117,14 @@ const UserDetail = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                         <Avatar
                             src={user.avatar}
-                            alt={user.firstName}
+                            alt={user.name}
                             sx={{ width: 120, height: 120, mr: 3 }}
                         >
-                            {user.firstName?.charAt(0)}
+                            {user.name?.charAt(0)}
                         </Avatar>
                         <Box sx={{ flexGrow: 1 }}>
                             <Typography variant="h3" component="h2" gutterBottom>
-                                {user.firstName} {user.lastName}
+                                {user.name}
                             </Typography>
                             <Typography
                                 variant="h6"
@@ -178,14 +169,14 @@ const UserDetail = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                                         <Avatar
                                             src={user?.avatar}
-                                            alt={user?.firstName}
+                                            alt={user?.name}
                                             sx={{ width: 80, height: 80, mr: 3 }}
                                         >
-                                            {user?.firstName?.charAt(0)}
+                                            {user?.name?.charAt(0)}
                                         </Avatar>
                                         <Box>
                                             <Typography variant="h4" gutterBottom>
-                                                {user?.firstName} {user?.lastName}
+                                                {user?.name}
                                             </Typography>
                                             <Typography variant="h6" color="text.secondary" gutterBottom>
                                                 @{user?.username}

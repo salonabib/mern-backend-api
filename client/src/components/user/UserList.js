@@ -196,14 +196,14 @@ const UserList = () => {
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 <Avatar
                                                     src={user.photo ? `/api/users/${user._id}/photo` : null}
-                                                    alt={user.firstName}
+                                                    alt={user.name}
                                                     sx={{ width: 40, height: 40, mr: 2 }}
                                                 >
-                                                    {user.firstName?.charAt(0)}
+                                                    {user.name?.charAt(0)}
                                                 </Avatar>
                                                 <Box>
                                                     <Typography variant="body2" fontWeight="medium">
-                                                        {user.firstName} {user.lastName}
+                                                        {user.name}
                                                     </Typography>
                                                     <Typography
                                                         variant="body2"

@@ -109,4 +109,13 @@ userSchema.methods.toJSON = function () {
     return user;
 };
 
+// Virtual for full name
+userSchema.virtual('name').get(function () {
+    return `${this.firstName} ${this.lastName}`;
+});
+
+// Ensure virtual fields are serialized
+userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: true });
+
 module.exports = mongoose.model('User', userSchema); 

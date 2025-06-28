@@ -117,7 +117,7 @@ const Navbar = () => {
                             {user?.photo ? (
                                 <Avatar
                                     src={`/api/users/${user._id}/photo`}
-                                    alt={user.firstName}
+                                    alt={user.name}
                                     sx={{ width: 32, height: 32 }}
                                 />
                             ) : (

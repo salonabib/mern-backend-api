@@ -25,6 +25,7 @@ const UserSuggestions = () => {
             setLoading(true);
             const response = await api.get('/users/suggestions');
             const suggestionsData = response.data.data;
+            console.log('Fetched suggestions data:', suggestionsData);
             setSuggestions(suggestionsData);
 
             // Initialize following states based on backend data
@@ -117,6 +118,7 @@ const UserSuggestions = () => {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {suggestions.map((user) => {
+                        console.log('Rendering user:', user);
                         const isFollowing = followingStates[user._id] === 'following';
                         const isLoading = followingStates[user._id] === 'loading';
                         const photoUrl = user.photo ? `/api/users/${user._id}/photo` : null;
@@ -136,10 +138,10 @@ const UserSuggestions = () => {
                                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                                     <Avatar
                                         src={photoUrl}
-                                        alt={user.firstName}
+                                        alt={user.name}
                                         sx={{ width: 48, height: 48, mr: 2 }}
                                     >
-                                        {user.firstName?.charAt(0)}
+                                        {user.name?.charAt(0)}
                                     </Avatar>
                                     <Box sx={{ flex: 1 }}>
                                         <Typography
@@ -156,7 +158,7 @@ const UserSuggestions = () => {
                                                 }
                                             }}
                                         >
-                                            {user.firstName} {user.lastName}
+                                            User ID: {user._id}
                                         </Typography>
                                         <Typography
                                             variant="body2"

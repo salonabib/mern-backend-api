@@ -337,13 +337,8 @@ router.get('/:id', protect, [
             });
         }
 
-        // Only allow users to view their own profile or admins to view any profile
-        if (req.user.role !== 'admin' && req.user.id !== req.params.id) {
-            return res.status(403).json({
-                success: false,
-                message: 'Not authorized to view this user'
-            });
-        }
+        // Allow any authenticated user to view profiles (typical for social media)
+        // Only restrict access to sensitive information if needed
 
         res.json({
             success: true,

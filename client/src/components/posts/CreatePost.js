@@ -123,14 +123,14 @@ const CreatePost = ({ onPostCreated }) => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
                     <Avatar
                         src={photoUrl}
-                        alt={user?.firstName}
+                        alt={user?.name}
                         sx={{ width: 48, height: 48, mr: 2 }}
                     >
-                        {user?.firstName?.charAt(0)}
+                        {user?.name?.charAt(0)}
                     </Avatar>
                     <Box sx={{ flexGrow: 1 }}>
                         <Typography variant="subtitle1" fontWeight="medium">
-                            {user?.firstName} {user?.lastName}
+                            {user?.name}
                         </Typography>
                         <Typography
                             variant="body2"

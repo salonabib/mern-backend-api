@@ -39,6 +39,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
 
     // Helper function to get avatar initials with fallback logic
     const getAvatarInitials = (user) => {
+        if (user?.name) return user.name.charAt(0);
         if (user?.firstName) return user.firstName.charAt(0);
         if (user?.lastName) return user.lastName.charAt(0);
         if (user?.username) return user.username.charAt(0);
@@ -47,6 +48,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
 
     // Helper function to get alt text with fallback logic
     const getAvatarAltText = (user) => {
+        if (user?.name) return user.name;
         if (user?.firstName) return user.firstName;
         if (user?.lastName) return user.lastName;
         if (user?.username) return user.username;
@@ -162,20 +164,24 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                     </Avatar>
                     <Box sx={{ flexGrow: 1 }}>
                         <Typography variant="subtitle1" fontWeight="medium">
-                            {post.postedBy?.firstName} {post.postedBy?.lastName}
+                            User ID: {post.postedBy?._id}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            <span>
-                                <span style={{ display: 'inline' }}>
-                                    <RouterLink
-                                        to={`/users/${post.postedBy?._id}`}
-                                        style={{ textDecoration: 'none', color: 'inherit' }}
-                                    >
-                                        @{post.postedBy?.username}
-                                    </RouterLink>
-                                </span>
-                                {' '}• {formatDate(post.createdAt)}
-                            </span>
+                            <Typography
+                                component={RouterLink}
+                                to={`/users/${post.postedBy?._id}`}
+                                sx={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    '&:hover': {
+                                        color: 'primary.main',
+                                        textDecoration: 'underline'
+                                    }
+                                }}
+                            >
+                                @{post.postedBy?.username}
+                            </Typography>
+                            {' '}• {formatDate(post.createdAt)}
                         </Typography>
                     </Box>
                     {isAuthor && (
@@ -325,7 +331,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                                         <Box sx={{ flexGrow: 1 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                                 <Typography variant="subtitle2" fontWeight="medium">
-                                                    {comment.postedBy?.firstName} {comment.postedBy?.lastName}
+                                                    User ID: {comment.postedBy?._id}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     {formatDate(comment.createdAt)}

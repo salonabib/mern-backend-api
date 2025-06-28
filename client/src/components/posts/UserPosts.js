@@ -92,14 +92,14 @@ const UserPosts = ({ userId, userInfo }) => {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Avatar
                                     src={photoUrl}
-                                    alt={userInfo?.firstName}
+                                    alt={userInfo?.name}
                                     sx={{ width: 64, height: 64, mr: 3 }}
                                 >
-                                    {userInfo?.firstName?.charAt(0)}
+                                    {userInfo?.name?.charAt(0)}
                                 </Avatar>
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Typography variant="h4" component="h1" gutterBottom>
-                                        {userInfo?.firstName} {userInfo?.lastName}
+                                        {userInfo?.name}
                                     </Typography>
                                     <Typography
                                         variant="h6"
@@ -171,7 +171,7 @@ const UserPosts = ({ userId, userInfo }) => {
                                 <Typography variant="h6" color="text.secondary" gutterBottom>
                                     {isOwnProfile
                                         ? 'You haven\'t created any posts yet.'
-                                        : `${userInfo?.firstName} hasn\'t created any posts yet.`
+                                        : `${userInfo?.name} hasn\'t created any posts yet.`
                                     }
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

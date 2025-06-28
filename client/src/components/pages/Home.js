@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Container,
@@ -15,10 +15,7 @@ import {
     ListItemText,
     ListItemAvatar,
     Divider,
-    Paper,
     LinearProgress,
-    IconButton,
-    Badge,
     Alert,
     Fade,
     Grow,
@@ -32,16 +29,12 @@ import {
     PersonAdd,
     Feed,
     People,
-    TrendingUp,
-    Notifications,
-    Add,
     Favorite,
     Comment,
-    Share,
     Visibility,
     Group,
     PostAdd,
-    TrendingUp as TrendingIcon,
+    TrendingUp,
     Schedule,
     EmojiEvents,
     Psychology,
@@ -50,16 +43,52 @@ import { useAuth } from '../../contexts/AuthContext';
 import UserSuggestions from '../user/UserSuggestions';
 
 const Home = () => {
-    const { isAuthenticated, user, api } = useAuth();
-    const [stats, setStats] = useState({
-        posts: 0,
-        followers: 0,
-        following: 0,
-        likes: 0
-    });
+    const { isAuthenticated, user, api, loading } = useAuth();
+    const [userStats, setUserStats] = useState(null);
     const [recentActivity, setRecentActivity] = useState([]);
     const [trendingTopics, setTrendingTopics] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loadingStats, setLoadingStats] = useState(false);
+    const [loadingActivity, setLoadingActivity] = useState(false);
+    const [error, setError] = useState(null);
+
+    const fetchUserStats = useCallback(async () => {
+        if (!isAuthenticated) return;
+
+        setLoadingStats(true);
+        try {
+            const response = await api.get('/users/stats');
+            setUserStats(response.data);
+        } catch (err) {
+            console.error('Error fetching user stats:', err);
+            setError('Failed to load user statistics');
+        } finally {
+            setLoadingStats(false);
+        }
+    }, [isAuthenticated, api]);
+
+    const fetchRecentActivity = useCallback(async () => {
+        if (!isAuthenticated) return;
+
+        setLoadingActivity(true);
+        try {
+            const response = await api.get('/users/activity');
+            setRecentActivity(response.data);
+        } catch (err) {
+            console.error('Error fetching recent activity:', err);
+            setError('Failed to load recent activity');
+        } finally {
+            setLoadingActivity(false);
+        }
+    }, [isAuthenticated, api]);
+
+    const fetchTrendingTopics = useCallback(async () => {
+        try {
+            const response = await api.get('/posts/trending');
+            setTrendingTopics(response.data);
+        } catch (err) {
+            console.error('Error fetching trending topics:', err);
+        }
+    }, [api]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -67,48 +96,7 @@ const Home = () => {
             fetchRecentActivity();
             fetchTrendingTopics();
         }
-    }, [isAuthenticated]);
-
-    const fetchUserStats = async () => {
-        try {
-            const response = await api.get(`/users/${user._id}`);
-            if (response.data.success) {
-                const userData = response.data.data;
-                setStats({
-                    posts: userData.posts?.length || 0,
-                    followers: userData.followers?.length || 0,
-                    following: userData.following?.length || 0,
-                    likes: userData.totalLikes || 0
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching user stats:', error);
-        }
-    };
-
-    const fetchRecentActivity = async () => {
-        try {
-            const response = await api.get('/posts/feed?limit=5');
-            if (response.data.success) {
-                setRecentActivity(response.data.data);
-            }
-        } catch (error) {
-            console.error('Error fetching recent activity:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchTrendingTopics = async () => {
-        // Mock trending topics - in a real app, this would come from analytics
-        setTrendingTopics([
-            { tag: '#MERN', count: 156, trend: 'up' },
-            { tag: '#React', count: 89, trend: 'up' },
-            { tag: '#JavaScript', count: 234, trend: 'up' },
-            { tag: '#WebDev', count: 67, trend: 'down' },
-            { tag: '#Coding', count: 123, trend: 'up' },
-        ]);
-    };
+    }, [isAuthenticated, fetchUserStats, fetchRecentActivity, fetchTrendingTopics]);
 
     const features = [
         {
@@ -160,9 +148,6 @@ const Home = () => {
     ];
 
     if (isAuthenticated) {
-        // Get photo URL if user has a photo
-        const photoUrl = user?.photo ? `/api/users/${user._id}/photo` : null;
-
         return (
             <Container maxWidth="lg" component="main" role="main">
                 <Fade in timeout={800}>
@@ -189,7 +174,7 @@ const Home = () => {
                                         <Grid size={{ xs: 6, sm: 3 }}>
                                             <Box textAlign="center">
                                                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                    {stats.posts}
+                                                    {userStats?.posts}
                                                 </Typography>
                                                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                                                     Posts
@@ -199,7 +184,7 @@ const Home = () => {
                                         <Grid size={{ xs: 6, sm: 3 }}>
                                             <Box textAlign="center">
                                                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                    {stats.followers}
+                                                    {userStats?.followers}
                                                 </Typography>
                                                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                                                     Followers
@@ -209,7 +194,7 @@ const Home = () => {
                                         <Grid size={{ xs: 6, sm: 3 }}>
                                             <Box textAlign="center">
                                                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                    {stats.following}
+                                                    {userStats?.following}
                                                 </Typography>
                                                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                                                     Following
@@ -219,7 +204,7 @@ const Home = () => {
                                         <Grid size={{ xs: 6, sm: 3 }}>
                                             <Box textAlign="center">
                                                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                    {stats.likes}
+                                                    {userStats?.likes}
                                                 </Typography>
                                                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
                                                     Total Likes
@@ -278,11 +263,11 @@ const Home = () => {
                                     <Typography variant="h5" component="h2" gutterBottom>
                                         Recent Activity 📝
                                     </Typography>
-                                    {loading ? (
+                                    {loadingActivity ? (
                                         <Box sx={{ width: '100%' }}>
                                             <LinearProgress />
                                         </Box>
-                                    ) : recentActivity.length > 0 ? (
+                                    ) : recentActivity && recentActivity.length > 0 ? (
                                         <List>
                                             {recentActivity.slice(0, 3).map((post, index) => (
                                                 <React.Fragment key={post._id}>
@@ -441,14 +426,14 @@ const Home = () => {
                                 <Card sx={{ mb: 3 }}>
                                     <CardContent>
                                         <Typography variant="h6" component="h2" gutterBottom>
-                                            <TrendingIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                            <TrendingUp sx={{ mr: 1, verticalAlign: 'middle' }} />
                                             Trending Topics
                                         </Typography>
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {trendingTopics.map((topic, index) => (
+                                            {trendingTopics && Array.isArray(trendingTopics) && trendingTopics.map((topic, index) => (
                                                 <Chip
                                                     key={index}
-                                                    label={`${topic.tag} ${topic.count}`}
+                                                    label={`${topic.topic} ${topic.count}`}
                                                     size="small"
                                                     color={topic.trend === 'up' ? 'primary' : 'default'}
                                                     variant="outlined"

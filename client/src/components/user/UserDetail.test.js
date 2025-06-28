@@ -5,6 +5,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import UserDetail from './UserDetail';
 import { AuthProvider } from '../../contexts/AuthContext';
 
+// Mock axios
+jest.mock('axios');
+
 // Mock useParams
 const mockUseParams = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -12,10 +15,15 @@ jest.mock('react-router-dom', () => ({
     useParams: () => mockUseParams(),
 }));
 
-// Mock the API
-const mockApi = {
-    get: jest.fn(),
+// Mock localStorage
+const mockLocalStorage = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
 };
+Object.defineProperty(window, 'localStorage', {
+    value: mockLocalStorage,
+});
 
 const mockUseAuth = jest.fn();
 jest.mock('../../contexts/AuthContext', () => ({
@@ -29,6 +37,7 @@ const mockUser = {
     _id: 'user789',
     firstName: 'Emily',
     lastName: 'Clark',
+    name: 'Emily Clark',
     username: 'emilyclark',
     email: 'emily@example.com',
     role: 'user',
@@ -45,11 +54,17 @@ describe('UserDetail Component', () => {
         mockUseParams.mockReturnValue({ id: 'user789' });
         mockUseAuth.mockReturnValue({
             user: mockUser,
-            api: mockApi,
             isAuthenticated: true,
         });
-        mockApi.get.mockResolvedValue({
-            data: { user: mockUser }
+        mockLocalStorage.getItem.mockReturnValue('fake-token');
+
+        // Mock axios.get
+        const axios = require('axios');
+        axios.get.mockResolvedValue({
+            data: {
+                success: true,
+                data: mockUser
+            }
         });
     });
 
@@ -66,7 +81,7 @@ describe('UserDetail Component', () => {
 
         await waitFor(() => {
             const links = screen.getAllByRole('link');
-            const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@johndoe'));
+            const usernameLink = links.find(link => link.textContent.replace(/\s+/g, '').includes('@emilyclark'));
             expect(usernameLink).toBeDefined();
             expect(usernameLink).toHaveAttribute('href', '/users/user789');
         });
@@ -74,9 +89,11 @@ describe('UserDetail Component', () => {
 
     test('username links point to correct user profile URLs', async () => {
         render(
-            <AuthProvider>
-                <UserDetail />
-            </AuthProvider>
+            <BrowserRouter>
+                <AuthProvider>
+                    <UserDetail />
+                </AuthProvider>
+            </BrowserRouter>
         );
 
         // Wait for user data to load

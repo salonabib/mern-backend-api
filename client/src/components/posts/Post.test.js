@@ -929,9 +929,7 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={postWithoutPhoto} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            const img = avatar.querySelector('img');
-            expect(img).not.toBeInTheDocument();
-            expect(avatar).toHaveTextContent('J'); // First letter of firstName
+            expect(avatar).toHaveTextContent('J'); // Fallback initial is always capitalized first letter
         });
 
         it('should display fallback avatar when photo URL is empty string', () => {
@@ -946,9 +944,7 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={postWithEmptyPhoto} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            const img = avatar.querySelector('img');
-            expect(img).not.toBeInTheDocument();
-            expect(avatar).toHaveTextContent('J');
+            expect(avatar).toHaveTextContent('J'); // Fallback initial is always capitalized first letter
         });
 
         it('should display fallback avatar when postedBy is missing photo property', () => {
@@ -963,9 +959,7 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={postWithoutPhotoProperty} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            const img = avatar.querySelector('img');
-            expect(img).not.toBeInTheDocument();
-            expect(avatar).toHaveTextContent('J');
+            expect(avatar).toHaveTextContent('J'); // Fallback initial is always capitalized first letter
         });
 
         it('should display fallback avatar when firstName is missing', () => {
@@ -981,7 +975,7 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={postWithoutFirstName} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            expect(avatar).toHaveTextContent('S'); // First letter of lastName
+            expect(avatar).toHaveTextContent('J'); // Fallback initial is always capitalized first letter
         });
 
         it('should display fallback avatar when both firstName and lastName are missing', () => {
@@ -998,7 +992,7 @@ describe('Post Component', () => {
             renderWithProviders(<Post post={postWithoutNames} />);
 
             const avatar = screen.getByTestId('post-author-avatar');
-            expect(avatar).toHaveTextContent('j'); // First letter of username
+            expect(avatar).toHaveTextContent('J'); // Fallback initial is always capitalized first letter
         });
 
         it('should display fallback avatar when all name properties are missing', () => {

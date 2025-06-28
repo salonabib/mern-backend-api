@@ -507,9 +507,11 @@ describe('Profile Component', () => {
 
     test('username links point to correct user profile URLs', async () => {
         render(
-            <AuthProvider>
-                <Profile />
-            </AuthProvider>
+            <BrowserRouter>
+                <AuthProvider>
+                    <Profile />
+                </AuthProvider>
+            </BrowserRouter>
         );
 
         // Wait for profile data to load

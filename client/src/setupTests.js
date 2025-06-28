@@ -4,42 +4,33 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// Suppress console errors and warnings for non-critical issues
+// Suppress noisy console.error and console.warn during tests
 const originalError = console.error;
 const originalWarn = console.warn;
+const originalLog = console.log;
 
 beforeAll(() => {
-    console.error = (...args) => {
-        // Suppress TouchRipple warnings and other Material-UI act() warnings
-        if (
-            typeof args[0] === 'string' &&
-            (args[0].includes('TouchRipple') ||
-                args[0].includes('act(...)') ||
-                args[0].includes('not wrapped in act'))
-        ) {
-            return;
+    jest.spyOn(console, 'error').mockImplementation((...args) => {
+        // Allow test failures and assertion errors to show
+        if (args[0] && typeof args[0] === 'string' && args[0].includes('expect')) {
+            originalError(...args);
         }
-        originalError.call(console, ...args);
-    };
-
-    console.warn = (...args) => {
-        // Suppress Material-UI Grid deprecation warnings
-        if (
-            typeof args[0] === 'string' &&
-            (args[0].includes('MUI Grid') ||
-                args[0].includes('item prop has been removed') ||
-                args[0].includes('xs prop has been removed') ||
-                args[0].includes('md prop has been removed'))
-        ) {
-            return;
-        }
-        originalWarn.call(console, ...args);
-    };
+        // Otherwise, suppress
+    });
+    jest.spyOn(console, 'warn').mockImplementation(() => { });
+    jest.spyOn(console, 'log').mockImplementation(() => { });
 });
 
 afterAll(() => {
-    console.error = originalError;
-    console.warn = originalWarn;
+    if (console.error.mockRestore) {
+        console.error.mockRestore();
+    }
+    if (console.warn.mockRestore) {
+        console.warn.mockRestore();
+    }
+    if (console.log.mockRestore) {
+        console.log.mockRestore();
+    }
 });
 
 global.TextEncoder = require('util').TextEncoder;

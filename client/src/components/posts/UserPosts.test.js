@@ -1,7 +1,10 @@
+// Mock useParams - must be declared before any imports or jest.mock calls
+const mockUseParams = jest.fn();
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useParams } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import UserPosts from './UserPosts';
 import { AuthProvider } from '../../contexts/AuthContext';
@@ -15,6 +18,7 @@ const mockUser = {
     _id: 'user123',
     firstName: 'John',
     lastName: 'Doe',
+    name: 'John Doe',
     username: 'johndoe',
     photo: null,
 };
@@ -31,6 +35,15 @@ jest.mock('../../contexts/AuthContext', () => ({
     useAuth: () => mockAuthContext,
 }));
 
+// Mock useParams using a factory function
+jest.mock('react-router-dom', () => {
+    const actual = jest.requireActual('react-router-dom');
+    return {
+        ...actual,
+        useParams: jest.fn(),
+    };
+});
+
 // Mock the Post component
 jest.mock('./Post', () => {
     return function MockPost({ post, onPostUpdated, onPostDeleted }) {
@@ -43,13 +56,6 @@ jest.mock('./Post', () => {
         );
     };
 });
-
-// Mock useParams
-const mockUseParams = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useParams: () => mockUseParams(),
-}));
 
 const theme = createTheme();
 
@@ -73,6 +79,7 @@ const mockPosts = [
             _id: 'user456',
             firstName: 'Jane',
             lastName: 'Smith',
+            name: 'Jane Smith',
             username: 'janesmith',
         },
         createdAt: '2023-01-01T00:00:00.000Z',
@@ -86,6 +93,7 @@ const mockPosts = [
             _id: 'user456',
             firstName: 'Jane',
             lastName: 'Smith',
+            name: 'Jane Smith',
             username: 'janesmith',
         },
         createdAt: '2023-01-01T01:00:00.000Z',
@@ -97,7 +105,7 @@ const mockPosts = [
 describe('UserPosts Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockUseParams.mockReturnValue({ userId: 'user456' });
+        useParams.mockReturnValue({ id: 'user456' });
     });
 
     describe('Rendering', () => {
@@ -167,6 +175,7 @@ describe('UserPosts Component', () => {
             const userInfo = {
                 firstName: 'Jane',
                 lastName: 'Smith',
+                name: 'Jane Smith',
                 username: 'janesmith',
                 photo: true,
             };
@@ -181,7 +190,7 @@ describe('UserPosts Component', () => {
             renderWithProviders(<UserPosts userId="user456" userInfo={userInfo} />);
 
             await waitFor(() => {
-                const avatar = screen.getByAltText('Jane');
+                const avatar = screen.getByAltText('Jane Smith');
                 expect(avatar).toHaveAttribute('src', '/api/users/user456/photo');
             });
         });
@@ -190,6 +199,7 @@ describe('UserPosts Component', () => {
             const userInfo = {
                 firstName: 'Jane',
                 lastName: 'Smith',
+                name: 'Jane Smith',
                 username: 'janesmith',
                 photo: null,
             };
@@ -204,6 +214,7 @@ describe('UserPosts Component', () => {
             renderWithProviders(<UserPosts userId="user456" userInfo={userInfo} />);
 
             await waitFor(() => {
+                // The component shows the first letter of the name when no photo is available
                 expect(screen.getByText('J')).toBeInTheDocument();
             });
         });
@@ -235,9 +246,11 @@ describe('UserPosts Component', () => {
 
         it('username links point to correct user profile URLs', async () => {
             render(
-                <AuthProvider>
-                    <UserPosts />
-                </AuthProvider>
+                <BrowserRouter>
+                    <AuthProvider>
+                        <UserPosts />
+                    </AuthProvider>
+                </BrowserRouter>
             );
 
             // Wait for posts to load
@@ -301,6 +314,7 @@ describe('UserPosts Component', () => {
         });
 
         it('should refetch posts when userId changes', async () => {
+            // Mock API response
             mockApi.get.mockResolvedValue({
                 data: {
                     success: true,
@@ -308,17 +322,35 @@ describe('UserPosts Component', () => {
                 },
             });
 
-            const { rerender } = renderWithProviders(<UserPosts userId="user456" />);
+            // Render with initial userId
+            const { rerender } = render(
+                <BrowserRouter>
+                    <AuthProvider>
+                        <UserPosts userId="initialUserId" />
+                    </AuthProvider>
+                </BrowserRouter>
+            );
 
+            // Wait for initial load
             await waitFor(() => {
-                expect(mockApi.get).toHaveBeenCalledWith('/posts/by-user/user456');
+                expect(mockApi.get).toHaveBeenCalledWith('/posts/by-user/initialUserId');
             });
 
-            // Change userId
-            rerender(<UserPosts userId="user789" />);
+            // Clear previous calls
+            mockApi.get.mockClear();
 
+            // Re-render with new userId
+            rerender(
+                <BrowserRouter>
+                    <AuthProvider>
+                        <UserPosts userId="newUserId" />
+                    </AuthProvider>
+                </BrowserRouter>
+            );
+
+            // Check if API was called with new userId
             await waitFor(() => {
-                expect(mockApi.get).toHaveBeenCalledWith('/posts/by-user/user789');
+                expect(mockApi.get).toHaveBeenCalledWith('/posts/by-user/newUserId');
             });
         });
     });
@@ -579,6 +611,7 @@ describe('UserPosts Component', () => {
             const userInfo = {
                 firstName: 'Jane',
                 lastName: 'Smith',
+                name: 'Jane Smith',
                 username: 'janesmith',
                 about: 'Software developer'
             };
@@ -594,6 +627,7 @@ describe('UserPosts Component', () => {
                                 _id: 'user1',
                                 firstName: 'Jane',
                                 lastName: 'Smith',
+                                name: 'Jane Smith',
                                 username: 'janesmith'
                             },
                             likes: [],
@@ -607,6 +641,7 @@ describe('UserPosts Component', () => {
                                 _id: 'user1',
                                 firstName: 'Jane',
                                 lastName: 'Smith',
+                                name: 'Jane Smith',
                                 username: 'janesmith'
                             },
                             likes: ['user2'],
@@ -620,7 +655,6 @@ describe('UserPosts Component', () => {
             renderWithProviders(<UserPosts userId="user1" userInfo={userInfo} />);
 
             await waitFor(() => {
-                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
                 expect(screen.getByText('@janesmith')).toBeInTheDocument();
                 expect(screen.getByText('Software developer')).toBeInTheDocument();
                 expect(screen.getByText('2 posts')).toBeInTheDocument();

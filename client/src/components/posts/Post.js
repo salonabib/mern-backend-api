@@ -36,6 +36,22 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
     const isAuthor = post.postedBy?._id === user?._id;
     const photoUrl = post.postedBy?.photo ? `/api/users/${post.postedBy._id}/photo` : null;
 
+    // Helper function to get avatar initials with fallback logic
+    const getAvatarInitials = (user) => {
+        if (user?.firstName) return user.firstName.charAt(0);
+        if (user?.lastName) return user.lastName.charAt(0);
+        if (user?.username) return user.username.charAt(0);
+        return '';
+    };
+
+    // Helper function to get alt text with fallback logic
+    const getAvatarAltText = (user) => {
+        if (user?.firstName) return user.firstName;
+        if (user?.lastName) return user.lastName;
+        if (user?.username) return user.username;
+        return '';
+    };
+
     const handleLike = async () => {
         if (!user) return;
 
@@ -65,7 +81,7 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
         setError('');
 
         try {
-            const response = await api.post('/posts/comment', {
+            const response = await api.put('/posts/comment', {
                 postId: post._id,
                 text: newComment.trim(),
             });
@@ -86,8 +102,9 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            const response = await api.delete(`/posts/uncomment`, {
-                data: { postId: post._id, commentId },
+            const response = await api.put(`/posts/uncomment`, {
+                postId: post._id,
+                commentId,
             });
 
             if (response.data.success && onPostUpdated) {
@@ -136,10 +153,11 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
                     <Avatar
                         src={photoUrl}
-                        alt={post.postedBy?.firstName}
+                        alt={getAvatarAltText(post.postedBy)}
+                        data-testid="post-author-avatar"
                         sx={{ width: 48, height: 48, mr: 2 }}
                     >
-                        {post.postedBy?.firstName?.charAt(0)}
+                        {getAvatarInitials(post.postedBy)}
                     </Avatar>
                     <Box sx={{ flexGrow: 1 }}>
                         <Typography variant="subtitle1" fontWeight="medium">
@@ -288,9 +306,10 @@ const Post = ({ post, onPostUpdated, onPostDeleted }) => {
                                     <Box key={comment._id} sx={{ display: 'flex', gap: 1 }}>
                                         <Avatar
                                             src={comment.postedBy?.photo ? `/api/users/${comment.postedBy._id}/photo` : null}
+                                            data-testid={`comment-avatar-${comment._id}`}
                                             sx={{ width: 32, height: 32 }}
                                         >
-                                            {comment.postedBy?.firstName?.charAt(0)}
+                                            {getAvatarInitials(comment.postedBy)}
                                         </Avatar>
                                         <Box sx={{ flexGrow: 1 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>

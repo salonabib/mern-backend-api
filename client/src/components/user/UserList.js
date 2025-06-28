@@ -205,7 +205,20 @@ const UserList = () => {
                                                     <Typography variant="body2" fontWeight="medium">
                                                         {user.firstName} {user.lastName}
                                                     </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        component={RouterLink}
+                                                        to={`/users/${user._id}`}
+                                                        sx={{
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            '&:hover': {
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline'
+                                                            }
+                                                        }}
+                                                    >
                                                         @{user.username}
                                                     </Typography>
                                                 </Box>

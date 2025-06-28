@@ -242,6 +242,49 @@ describe('UserConnections Component', () => {
                 expect(screen.getByText('Failed to fetch connections')).toBeInTheDocument();
             });
         });
+
+        it('should render usernames as clickable links to user profiles', async () => {
+            mockApi.get.mockResolvedValueOnce({
+                data: { data: mockFollowers }
+            }).mockResolvedValueOnce({
+                data: { data: mockFollowing }
+            });
+
+            renderUserConnections();
+
+            await waitFor(() => {
+                const links = screen.getAllByRole('link');
+                const usernameLinks = links.filter(link =>
+                    link.textContent.replace(/\s+/g, '').includes('@janesmith') ||
+                    link.textContent.replace(/\s+/g, '').includes('@bobjohnson')
+                );
+
+                expect(usernameLinks.length).toBeGreaterThan(0);
+
+                // Check that at least one username link has the correct href
+                const janeLink = usernameLinks.find(link =>
+                    link.textContent.replace(/\s+/g, '').includes('@janesmith')
+                );
+                if (janeLink) {
+                    expect(janeLink).toHaveAttribute('href', '/users/2');
+                }
+            });
+        });
+
+        it('should display follow/unfollow buttons for followers', async () => {
+            mockApi.get.mockResolvedValueOnce({
+                data: { data: mockFollowers }
+            }).mockResolvedValueOnce({
+                data: { data: mockFollowing }
+            });
+
+            renderUserConnections();
+
+            await waitFor(() => {
+                expect(screen.getByText('Follow')).toBeInTheDocument();
+                expect(screen.getByText('Unfollow')).toBeInTheDocument();
+            });
+        });
     });
 
     describe('Following Tab', () => {

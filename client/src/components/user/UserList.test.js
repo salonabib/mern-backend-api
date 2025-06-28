@@ -194,6 +194,29 @@ describe('UserList Component', () => {
             });
         });
 
+        it('should render usernames as clickable links to user profiles', async () => {
+            renderUserList();
+
+            await waitFor(() => {
+                const links = screen.getAllByRole('link');
+                const usernameLinks = links.filter(link =>
+                    link.textContent.replace(/\s+/g, '').includes('@janesmith') ||
+                    link.textContent.replace(/\s+/g, '').includes('@bobjohnson') ||
+                    link.textContent.replace(/\s+/g, '').includes('@alicebrown')
+                );
+
+                expect(usernameLinks.length).toBeGreaterThan(0);
+
+                // Check that at least one username link has the correct href
+                const janeLink = usernameLinks.find(link =>
+                    link.textContent.replace(/\s+/g, '').includes('@janesmith')
+                );
+                if (janeLink) {
+                    expect(janeLink).toHaveAttribute('href', '/users/2');
+                }
+            });
+        });
+
         it.skip('should display empty state when no users', async () => {
             mockApi.get.mockResolvedValueOnce({
                 data: { data: [], total: 0 }

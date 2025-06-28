@@ -383,4 +383,212 @@ describe('UserSuggestions Component', () => {
             expect(link).toHaveAttribute('href', expect.stringMatching(/^\/users\/[a-zA-Z0-9]+$/));
         });
     });
+
+    describe('People To Follow Section Display', () => {
+        it('should display the "People to Follow" section with available users', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                // Check that the section title is displayed
+                expect(screen.getByText('People to Follow')).toBeInTheDocument();
+
+                // Check that all available users are displayed
+                expect(screen.getByText('John Doe')).toBeInTheDocument();
+                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+                expect(screen.getByText('@johndoe')).toBeInTheDocument();
+                expect(screen.getByText('@janesmith')).toBeInTheDocument();
+
+                // Check that follow buttons are present for users not being followed
+                const followButtons = screen.getAllByRole('button', { name: /^Follow$/ });
+                const followingButtons = screen.getAllByRole('button', { name: /^Following$/ });
+
+                expect(followButtons).toHaveLength(1); // John is not being followed
+                expect(followingButtons).toHaveLength(1); // Jane is already being followed
+            });
+        });
+
+        it('should display multiple users available to follow', async () => {
+            const multipleSuggestions = {
+                data: {
+                    success: true,
+                    data: [
+                        {
+                            _id: 'user1',
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            name: 'John Doe',
+                            username: 'johndoe',
+                            email: 'john@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            isFollowing: false,
+                        },
+                        {
+                            _id: 'user2',
+                            firstName: 'Jane',
+                            lastName: 'Smith',
+                            name: 'Jane Smith',
+                            username: 'janesmith',
+                            email: 'jane@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-02T00:00:00.000Z',
+                            isFollowing: false,
+                        },
+                        {
+                            _id: 'user3',
+                            firstName: 'Bob',
+                            lastName: 'Johnson',
+                            name: 'Bob Johnson',
+                            username: 'bobjohnson',
+                            email: 'bob@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-03T00:00:00.000Z',
+                            isFollowing: false,
+                        },
+                    ],
+                },
+            };
+
+            mockApi.get.mockResolvedValue(multipleSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                // Check that all three users are displayed
+                expect(screen.getByText('John Doe')).toBeInTheDocument();
+                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
+
+                expect(screen.getByText('@johndoe')).toBeInTheDocument();
+                expect(screen.getByText('@janesmith')).toBeInTheDocument();
+                expect(screen.getByText('@bobjohnson')).toBeInTheDocument();
+
+                // Check that all users have follow buttons (since none are being followed)
+                const followButtons = screen.getAllByRole('button', { name: /^Follow$/ });
+                expect(followButtons).toHaveLength(3);
+            });
+        });
+
+        it('should display users with different following states correctly', async () => {
+            const mixedSuggestions = {
+                data: {
+                    success: true,
+                    data: [
+                        {
+                            _id: 'user1',
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            name: 'John Doe',
+                            username: 'johndoe',
+                            email: 'john@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            isFollowing: false, // Not following
+                        },
+                        {
+                            _id: 'user2',
+                            firstName: 'Jane',
+                            lastName: 'Smith',
+                            name: 'Jane Smith',
+                            username: 'janesmith',
+                            email: 'jane@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-02T00:00:00.000Z',
+                            isFollowing: true, // Already following
+                        },
+                        {
+                            _id: 'user3',
+                            firstName: 'Bob',
+                            lastName: 'Johnson',
+                            name: 'Bob Johnson',
+                            username: 'bobjohnson',
+                            email: 'bob@example.com',
+                            photo: null,
+                            role: 'user',
+                            isActive: true,
+                            createdAt: '2024-01-03T00:00:00.000Z',
+                            isFollowing: false, // Not following
+                        },
+                    ],
+                },
+            };
+
+            mockApi.get.mockResolvedValue(mixedSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                // Check that all users are displayed regardless of following state
+                expect(screen.getByText('John Doe')).toBeInTheDocument();
+                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+                expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
+
+                // Check that follow buttons are shown for users not being followed
+                const followButtons = screen.getAllByRole('button', { name: /^Follow$/ });
+                expect(followButtons).toHaveLength(2); // John and Bob
+
+                // Check that following buttons are shown for users already being followed
+                const followingButtons = screen.getAllByRole('button', { name: /^Following$/ });
+                expect(followingButtons).toHaveLength(1); // Jane
+            });
+        });
+
+        it('should display user information correctly for each available user', async () => {
+            mockApi.get.mockResolvedValue(mockSuggestions);
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                // Check that each user has their name displayed
+                expect(screen.getByText('John Doe')).toBeInTheDocument();
+                expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+
+                // Check that each user has their username displayed with @ symbol
+                expect(screen.getByText('@johndoe')).toBeInTheDocument();
+                expect(screen.getByText('@janesmith')).toBeInTheDocument();
+
+                // Check that each user has an avatar (either photo or initials)
+                const avatars = screen.getAllByText('J'); // Both John and Jane start with J
+                expect(avatars).toHaveLength(2);
+
+                // Check that each user has a profile link
+                const profileLinks = screen.getAllByRole('link');
+                expect(profileLinks.length).toBeGreaterThanOrEqual(4); // At least 2 users × 2 links each
+            });
+        });
+
+        it('should handle empty suggestions gracefully', async () => {
+            mockApi.get.mockResolvedValue({ data: { success: true, data: [] } });
+
+            renderUserSuggestions();
+
+            await waitFor(() => {
+                // Check that the section title is still displayed
+                expect(screen.getByText('People to Follow')).toBeInTheDocument();
+
+                // Check that the empty state message is displayed
+                expect(screen.getByText('No suggestions available at the moment.')).toBeInTheDocument();
+
+                // Check that no user information is displayed
+                expect(screen.queryByText(/John Doe|Jane Smith/)).not.toBeInTheDocument();
+                expect(screen.queryByText(/@johndoe|@janesmith/)).not.toBeInTheDocument();
+
+                // Check that no follow buttons are displayed
+                expect(screen.queryByRole('button', { name: /^Follow$/ })).not.toBeInTheDocument();
+                expect(screen.queryByRole('button', { name: /^Following$/ })).not.toBeInTheDocument();
+            });
+        });
+    });
 }); 

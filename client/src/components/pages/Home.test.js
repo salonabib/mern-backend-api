@@ -690,4 +690,63 @@ describe('Home Component', () => {
             expect(profileLinks.length).toBeGreaterThan(0);
         });
     });
+
+    describe('UserSuggestions Integration', () => {
+        beforeEach(() => {
+            useAuth.mockReturnValue({
+                isAuthenticated: true,
+                user: {
+                    _id: '1',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    username: 'johndoe',
+                    email: 'john@example.com',
+                    role: 'user'
+                },
+                loading: false,
+                api: mockApi
+            });
+        });
+
+        it('should display UserSuggestions component for authenticated users', async () => {
+            mockApi.get
+                .mockResolvedValueOnce(mockUserStats)
+                .mockResolvedValueOnce(mockRecentActivity);
+
+            render(
+                <ThemeProvider theme={testTheme}>
+                    <BrowserRouter>
+                        <Home />
+                    </BrowserRouter>
+                </ThemeProvider>
+            );
+
+            await waitFor(() => {
+                // Check that the UserSuggestions component is rendered
+                expect(screen.getByTestId('user-suggestions')).toBeInTheDocument();
+                expect(screen.getByText('User Suggestions')).toBeInTheDocument();
+            });
+        });
+
+        it('should not display UserSuggestions component for non-authenticated users', () => {
+            useAuth.mockReturnValue({
+                isAuthenticated: false,
+                user: null,
+                loading: false,
+                api: mockApi
+            });
+
+            render(
+                <ThemeProvider theme={testTheme}>
+                    <BrowserRouter>
+                        <Home />
+                    </BrowserRouter>
+                </ThemeProvider>
+            );
+
+            // UserSuggestions should not be rendered for non-authenticated users
+            expect(screen.queryByTestId('user-suggestions')).not.toBeInTheDocument();
+            expect(screen.queryByText('User Suggestions')).not.toBeInTheDocument();
+        });
+    });
 }); 

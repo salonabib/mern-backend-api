@@ -121,14 +121,21 @@ router.get('/stats/overview', protect, authorize('admin'), async (req, res) => {
 router.get('/suggestions', protect, async (req, res) => {
     try {
         const currentUser = await User.findById(req.user.id);
-        const followingIds = [...currentUser.following, req.user.id];
+        const followingIds = currentUser.following || [];
 
-        const suggestions = await User.find({
-            _id: { $nin: followingIds }
+        // Get all users except the current user
+        const allUsers = await User.find({
+            _id: { $ne: req.user.id }
         })
             .select('firstName lastName username avatar')
-            .limit(5)
+            .limit(10)
             .sort({ createdAt: -1 });
+
+        // Add a flag to indicate if current user is following each user
+        const suggestions = allUsers.map(user => ({
+            ...user.toObject(),
+            isFollowing: followingIds.includes(user._id.toString())
+        }));
 
         res.json({
             success: true,

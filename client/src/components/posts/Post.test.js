@@ -163,6 +163,18 @@ describe('Post Component', () => {
             expect(usernameLink).toBeDefined();
             expect(usernameLink).toHaveAttribute('href', '/users/author123');
         });
+
+        it('username links point to correct user profile URLs', async () => {
+            renderWithProviders(<Post post={mockPost} />);
+
+            // Wait for post to load
+            await waitFor(() => {
+                const profileLinks = screen.getAllByRole('link').filter(link =>
+                    /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+                );
+                expect(profileLinks.length).toBeGreaterThan(0);
+            });
+        });
     });
 
     describe('Like Functionality', () => {

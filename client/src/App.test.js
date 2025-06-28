@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { AuthProvider } from './contexts/AuthContext';
 import App from './App';
@@ -45,10 +46,10 @@ test('renders home page by default', () => {
   render(<App />, { wrapper: TestWrapper });
 
   // Check that the home page content is rendered
-  const welcomeHeading = screen.getByText('Welcome to MERN Social');
+  const welcomeHeading = screen.getByText('Welcome to MERN Social 🚀');
   expect(welcomeHeading).toBeInTheDocument();
 
   // Check that the features section is rendered
-  const featuresHeading = screen.getByText('Features');
+  const featuresHeading = screen.getByText('Why Choose MERN Social? ✨');
   expect(featuresHeading).toBeInTheDocument();
 });

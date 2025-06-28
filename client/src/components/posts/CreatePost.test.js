@@ -105,6 +105,18 @@ describe('CreatePost Component', () => {
                 expect(usernameLink).toHaveAttribute('href', '/users/user123');
             });
         });
+
+        it('username links point to correct user profile URLs', async () => {
+            renderWithProviders(<CreatePost />);
+
+            // Wait for user data to load
+            await waitFor(() => {
+                expect(screen.getByText('@johndoe')).toBeInTheDocument();
+            });
+
+            const usernameLink = screen.getByText('@johndoe').closest('a');
+            expect(usernameLink).toHaveAttribute('href', '/users/user123');
+        });
     });
 
     describe('Form Interaction', () => {

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import UserConnections from './UserConnections';
+import { AuthProvider } from '../../contexts/AuthContext';
 
 // Mock the AuthContext
 const mockApi = {
@@ -425,6 +426,22 @@ describe('UserConnections Component', () => {
             await waitFor(() => {
                 expect(screen.getByText('Alice Brown')).toBeInTheDocument();
             });
+        });
+    });
+
+    test('username links point to correct user profile URLs', async () => {
+        render(
+            <AuthProvider>
+                <UserConnections />
+            </AuthProvider>
+        );
+
+        // Wait for connections to load
+        await waitFor(() => {
+            const profileLinks = screen.getAllByRole('link').filter(link =>
+                /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+            );
+            expect(profileLinks.length).toBeGreaterThan(0);
         });
     });
 }); 

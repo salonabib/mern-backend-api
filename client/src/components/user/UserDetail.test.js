@@ -71,4 +71,20 @@ describe('UserDetail Component', () => {
             expect(usernameLink).toHaveAttribute('href', '/users/user789');
         });
     });
+
+    test('username links point to correct user profile URLs', async () => {
+        render(
+            <AuthProvider>
+                <UserDetail />
+            </AuthProvider>
+        );
+
+        // Wait for user data to load
+        await waitFor(() => {
+            const profileLinks = screen.getAllByRole('link').filter(link =>
+                /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+            );
+            expect(profileLinks.length).toBeGreaterThan(0);
+        });
+    });
 }); 

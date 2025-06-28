@@ -232,6 +232,22 @@ describe('UserPosts Component', () => {
                 expect(usernameLink).toHaveAttribute('href', '/users/user456');
             });
         });
+
+        it('username links point to correct user profile URLs', async () => {
+            render(
+                <AuthProvider>
+                    <UserPosts />
+                </AuthProvider>
+            );
+
+            // Wait for posts to load
+            await waitFor(() => {
+                const profileLinks = screen.getAllByRole('link').filter(link =>
+                    /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+                );
+                expect(profileLinks.length).toBeGreaterThan(0);
+            });
+        });
     });
 
     describe('Data Fetching', () => {

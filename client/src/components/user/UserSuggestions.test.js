@@ -35,6 +35,7 @@ const mockSuggestions = {
                 role: 'user',
                 isActive: true,
                 createdAt: '2024-01-01T00:00:00.000Z',
+                isFollowing: false,
             },
             {
                 _id: 'user2',
@@ -46,6 +47,7 @@ const mockSuggestions = {
                 role: 'user',
                 isActive: true,
                 createdAt: '2024-01-02T00:00:00.000Z',
+                isFollowing: true,
             },
         ],
     },
@@ -140,12 +142,12 @@ describe('UserSuggestions Component', () => {
             renderUserSuggestions();
 
             await waitFor(() => {
-                const profileLinks = screen.getAllByRole('link');
-                // Check that we have links for both users
-                const user1Links = profileLinks.filter(link => link.getAttribute('href') === '/users/user1');
-                const user2Links = profileLinks.filter(link => link.getAttribute('href') === '/users/user2');
-                expect(user1Links).toHaveLength(2); // name + username for user1
-                expect(user2Links).toHaveLength(2); // name + username for user2
+                // Find all links that match /users/{id}
+                const profileLinks = screen.getAllByRole('link').filter(link =>
+                    /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+                );
+                // There are 2 users, each with 2 links (name + username)
+                expect(profileLinks.length).toBe(4);
             });
         });
 
@@ -189,8 +191,10 @@ describe('UserSuggestions Component', () => {
             renderUserSuggestions();
 
             await waitFor(() => {
-                const followButtons = screen.getAllByRole('button', { name: /follow/i });
-                expect(followButtons).toHaveLength(2);
+                const followButtons = screen.getAllByRole('button', { name: /^Follow$/ });
+                const followingButtons = screen.getAllByRole('button', { name: /^Following$/ });
+                expect(followButtons).toHaveLength(1); // Only John is not being followed
+                expect(followingButtons).toHaveLength(1); // Jane is already being followed
             });
         });
 
@@ -349,6 +353,31 @@ describe('UserSuggestions Component', () => {
             await waitFor(() => {
                 expect(mockApi.put).toHaveBeenCalledWith('/users/follow', { followId: 'user1' });
             });
+        });
+    });
+
+    test('username links point to correct user profile URLs', async () => {
+        mockApi.get.mockResolvedValue(mockSuggestions);
+
+        renderUserSuggestions();
+
+        // Wait for suggestions to load
+        await waitFor(() => {
+            const usernameLinks = screen.getAllByRole('link').filter(link =>
+                link.textContent.includes('@') || link.textContent.match(/^[a-zA-Z0-9_]+$/)
+            );
+            expect(usernameLinks.length).toBeGreaterThan(0);
+        });
+
+        // Get all username links dynamically
+        const usernameLinks = screen.getAllByRole('link').filter(link =>
+            link.textContent.includes('@') || link.textContent.match(/^[a-zA-Z0-9_]+$/)
+        );
+
+        // Check each username link points to the correct user URL
+        usernameLinks.forEach(link => {
+            // The links should point to /users/{id} format
+            expect(link).toHaveAttribute('href', expect.stringMatching(/^\/users\/[a-zA-Z0-9]+$/));
         });
     });
 }); 

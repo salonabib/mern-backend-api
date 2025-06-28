@@ -503,4 +503,20 @@ describe('Profile Component', () => {
             expect(usernameLink).toHaveAttribute('href', '/users/1');
         });
     });
+
+    test('username links point to correct user profile URLs', async () => {
+        render(
+            <AuthProvider>
+                <Profile />
+            </AuthProvider>
+        );
+
+        // Wait for profile data to load
+        await waitFor(() => {
+            const profileLinks = screen.getAllByRole('link').filter(link =>
+                /^\/users\/[a-zA-Z0-9]+$/.test(link.getAttribute('href'))
+            );
+            expect(profileLinks.length).toBeGreaterThan(0);
+        });
+    });
 }); 

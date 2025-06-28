@@ -27,6 +27,58 @@ db.users.insertOne({
     updatedAt: new Date()
 });
 
+// Create additional test users for suggestions
+db.users.insertMany([
+    {
+        username: "johndoe",
+        email: "john@example.com",
+        password: "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/HS.iK8e", // password: admin123
+        firstName: "John",
+        lastName: "Doe",
+        role: "user",
+        isActive: true,
+        about: "Software developer with 5 years of experience in web development.",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        username: "janesmith",
+        email: "jane@example.com",
+        password: "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/HS.iK8e", // password: admin123
+        firstName: "Jane",
+        lastName: "Smith",
+        role: "user",
+        isActive: true,
+        about: "Frontend developer passionate about creating beautiful user experiences.",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        username: "bobjohnson",
+        email: "bob@example.com",
+        password: "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/HS.iK8e", // password: admin123
+        firstName: "Bob",
+        lastName: "Johnson",
+        role: "user",
+        isActive: true,
+        about: "Backend developer specializing in Node.js and MongoDB.",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        username: "alicebrown",
+        email: "alice@example.com",
+        password: "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J/HS.iK8e", // password: admin123
+        firstName: "Alice",
+        lastName: "Brown",
+        role: "user",
+        isActive: true,
+        about: "Full-stack developer and tech enthusiast.",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+]);
+
 // Create sample posts
 db.posts.insertMany([
     {
@@ -67,4 +119,5 @@ db.posts.insertMany([
 
 print("Database initialized successfully!");
 print("Admin user created: admin@example.com / admin123");
+print("Test users created: john@example.com, jane@example.com, bob@example.com, alice@example.com (password: admin123)");
 print("Sample posts created"); 

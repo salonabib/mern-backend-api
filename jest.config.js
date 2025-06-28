@@ -1,6 +1,8 @@
+const isNodeTest = process.env.TEST_ENV === 'node';
+
 module.exports = {
     // Test environment
-    testEnvironment: 'jsdom',
+    testEnvironment: isNodeTest ? 'node' : 'jsdom',
 
     // Setup files
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
@@ -9,6 +11,11 @@ module.exports = {
     transform: {
         '^.+\\.(js|jsx)$': 'babel-jest',
     },
+
+    // Transform ESM dependencies
+    transformIgnorePatterns: [
+        '/node_modules/(?!(mongodb-memory-server|bson|mongodb|@mongodb-js)/)'
+    ],
 
     // Module name mapping for CSS and other assets
     moduleNameMapper: {

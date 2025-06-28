@@ -24,7 +24,17 @@ const UserSuggestions = () => {
         try {
             setLoading(true);
             const response = await api.get('/users/suggestions');
-            setSuggestions(response.data.data);
+            const suggestionsData = response.data.data;
+            setSuggestions(suggestionsData);
+
+            // Initialize following states based on backend data
+            const initialFollowingStates = {};
+            suggestionsData.forEach(user => {
+                if (user.isFollowing) {
+                    initialFollowingStates[user._id] = 'following';
+                }
+            });
+            setFollowingStates(initialFollowingStates);
         } catch (err) {
             setError('Failed to fetch suggestions');
             console.error('Error fetching suggestions:', err);
